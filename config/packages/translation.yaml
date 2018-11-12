@@ -7,7 +7,7 @@ framework:
             - '%locale%'
 
 translation:
-    locales: "%app.locales.available%"
+    locales: "%admin.locales.available%"
     webui:
         enabled: false
     edit_in_place:

@@ -7,21 +7,18 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
-use Scheb\TwoFactorBundle\Model\Google\TwoFactorInterface;
 
 /**
  * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  */
-class User implements UserInterface, \Serializable, TwoFactorInterface
+class User implements UserInterface, \Serializable
 {
     use TimestampableTrait;
     const PATTERN_EMAIL = '/^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,}$/';
-    const ROLE_DEFAULT = 'ROLE_USER';
+    const ROLE_DEFAULT = 'ROLE_ADMIN';
     const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
-    const ROLE_ADMIN = 'ROLE_ADMIN';
-    const ROLE_TRANSLATOR = 'ROLE_TRANSLATOR';
-    const ROLE_EXCLUDE_TRANSLATOR = ['ROLE_SUPER_ADMIN', 'ROLE_ADMIN'];
+    const ROLE_PREPARATOR = 'ROLE_PREPARATOR';
 
     /**
      * @ORM\Column(type="integer")
@@ -29,11 +26,6 @@ class User implements UserInterface, \Serializable, TwoFactorInterface
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-    /**
-     * @ORM\Column(name="googleAuthenticatorSecret", type="string", nullable=true)
-     */
-    private $googleAuthenticatorSecret;
 
     /**
      * Firstname
@@ -176,26 +168,6 @@ class User implements UserInterface, \Serializable, TwoFactorInterface
     public function getId()
     {
         return $this->id;
-    }
-
-    public function isGoogleAuthenticatorEnabled(): bool
-    {
-        return $this->googleAuthenticatorSecret ? true : false;
-    }
-
-    public function getGoogleAuthenticatorUsername(): string
-    {
-        return $this->username  == null ? '' : $this->username;
-    }
-
-    public function getGoogleAuthenticatorSecret(): string
-    {
-        return $this->googleAuthenticatorSecret == null ? '' : $this->googleAuthenticatorSecret;
-    }
-
-    public function setGoogleAuthenticatorSecret(?string $googleAuthenticatorSecret): void
-    {
-        $this->googleAuthenticatorSecret = $googleAuthenticatorSecret;
     }
 
     /**

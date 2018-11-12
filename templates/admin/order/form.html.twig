@@ -1,0 +1,25 @@
+{% extends "admin/layout.html.twig" %}
+
+{% block title %}{{ ('admin.order.title.' ~ type)|trans({}, 'app') }}{% endblock %}
+{% block mainTitle %}
+    <h1>{{ ('admin.order.title.' ~ type)|trans({}, 'app') }}</h1>
+{% endblock %}
+
+{% block content %}
+    {{ form_start(form) }}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-sm-12">
+
+                    {{ form_widget(form) }}
+                </div>
+                <button class="btn btn-info btn-save">
+                    <i class="fa fa-save"></i> {{ ('admin.common.' ~ type ~ '.button')|trans({}, 'app') }}
+                </button>
+                {% if type == 'update' and workflow_can(order, 'to_in_progress') %}
+                    <a href="{{ path('admin_order_apply_transition', {'id': project.id, 'transition': 'to_in_progress'}) }}">IN PROGRESS</a>
+                {% endif %}
+            </div>
+        </div>
+    {{ form_end(form) }}
+{% endblock %}

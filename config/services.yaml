@@ -2,13 +2,9 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: "fr"
-    app.locales: "en|fr"
-    app.cache_lifetime: 84400
-    app.locales.available: ["fr", "en"]
-    admin.locales: "en|fr"
-    admin.locales.available: ["en", "fr"]
+    admin.locales: "fr"
+    admin.locales.available: ["fr"]
     validator.translation_domain: 'app'
-    media_directory: '%kernel.project_dir%/public/uploads/media'
 
 services:
     # default configuration for services in *this* file
@@ -35,35 +31,9 @@ services:
     # please note that last definitions always *replace* previous ones
     # Extension
 
-    App\Form\Extension\MediaExtension:
-        tags:
-            - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FileType }
-
     App\Form\Extension\ChoiceExtension:
         tags:
         - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\ChoiceType }
 
-    App\Services\Core\CacheService:
-        arguments:
-            $lifeTime: '%app.cache_lifetime%'
-            $cacheFolder: '%kernel.cache_dir%'
-
-    App\Services\Core\FileUploader:
-        arguments:
-            $targetDirectory: '%media_directory%'
-
-    App\EventListener\MediaUploadListener:
-        tags:
-            - { name: doctrine.event_listener, event: prePersist }
-            - { name: doctrine.event_listener, event: preUpdate }
-            - { name: doctrine.event_listener, event: postLoad }
-
     authentication_handler:
         class: App\Handler\AuthenticationHandler
-
-    App\EventSubscriber\ContentSubscriber:
-        arguments:
-            $locales: '%app.locales.available%'
-        tags:
-        - { name: doctrine.event_listener, event: postUpdate, method: postUpdate, priority: 100  }
-        - { name: doctrine.event_listener, event: postPersist, method: postPersist, priority: 100  }

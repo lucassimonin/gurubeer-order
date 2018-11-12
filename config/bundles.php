@@ -19,13 +19,6 @@ return [
     Knp\DoctrineBehaviors\Bundle\DoctrineBehaviorsBundle::class => ['all' => true],
     WhiteOctober\BreadcrumbsBundle\WhiteOctoberBreadcrumbsBundle::class => ['all' => true],
     Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle::class => ['dev' => true, 'test' => true],
-    Liip\ImagineBundle\LiipImagineBundle::class => ['all' => true],
-    Snc\RedisBundle\SncRedisBundle::class => ['all' => true],
-    Scheb\TwoFactorBundle\SchebTwoFactorBundle::class => ['all' => true],
-    Endroid\QrCodeBundle\EndroidQrCodeBundle::class => ['all' => true],
-    Knp\Bundle\SnappyBundle\KnpSnappyBundle::class => ['all' => true],
-    A2lix\AutoFormBundle\A2lixAutoFormBundle::class => ['all' => true],
-    A2lix\TranslationFormBundle\A2lixTranslationFormBundle::class => ['all' => true],
     Translation\Bundle\TranslationBundle::class => ['all' => true],
     Translation\PlatformAdapter\Loco\Bridge\Symfony\TranslationAdapterLocoBundle::class => ['all' => true],
 ];

@@ -83,10 +83,11 @@
                                         <i class="fa fa-user-secret"></i> {{ 'admin.common.switch_to_user.button'|trans({}, 'app') }}
                                     </a>
                                 {% endif %}
-
-                                <a href="{{ path('admin_user_delete', {'id': user.id}) }}" class="btn btn-danger delete-button">
-                                    <i class="fa fa-trash-o" style="color:white;transition: all 30s linear;"></i> {{ 'admin.common.delete.button'|trans({}, 'app') }}
-                                </a>
+                                {% if is_granted('user-delete', order) %}
+                                    <a href="{{ path('admin_user_delete', {'id': user.id}) }}" class="btn btn-danger delete-button">
+                                        <i class="fa fa-trash-o" style="color:white;transition: all 30s linear;"></i> {{ 'admin.common.delete.button'|trans({}, 'app') }}
+                                    </a>
+                                {% endif %}
 
                             </td>
                         </tr>

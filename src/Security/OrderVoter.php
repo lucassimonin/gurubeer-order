@@ -8,21 +8,19 @@
 
 namespace App\Security;
 
+use App\Entity\Order;
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
-use phpDocumentor\Reflection\Types\Self_;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
 
 /**
- * Class UserVoter
+ * Class OrderVoter
  * @package App\Security
  */
-class UserVoter extends Voter
+class OrderVoter extends Voter
 {
-    const USER_VIEW = 'user-view';
-    const USER_DELETE = 'user-delete';
+    const ORDER_DELETE = 'delete';
 
     private $decisionManager;
 
@@ -43,11 +41,11 @@ class UserVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        if (!in_array($attribute, array(self::USER_VIEW), self::USER_DELETE)) {
+        if (!in_array($attribute, array(self::ORDER_DELETE))) {
             return false;
         }
 
-        if ($subject instanceof User) {
+        if ($subject instanceof Order) {
             return true;
         }
 
@@ -68,22 +66,10 @@ class UserVoter extends Voter
         }
 
         switch ($attribute) {
-            case self::USER_VIEW:
-                return $this->userView($token);
-            case self::USER_DELETE:
+            case self::ORDER_DELETE:
                 return false;
             default:
                 return true;
         }
-    }
-
-    /**
-     * @param TokenInterface $token
-     *
-     * @return bool
-     */
-    public function userView(TokenInterface $token)
-    {
-        return $this->decisionManager->decide($token, array(User::ROLE_SUPER_ADMIN));
     }
 }

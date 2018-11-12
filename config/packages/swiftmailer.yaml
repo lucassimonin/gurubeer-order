@@ -1,5 +1,5 @@
 parameters:
-    admin_mailer: 'lsimonin2@gmail.com'
+    admin_mailer: 'momar.diop@gurubeer.fr'
     from: 'no_reply@app.com'
 
 swiftmailer:

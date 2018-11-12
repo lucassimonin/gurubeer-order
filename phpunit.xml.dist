@@ -35,16 +35,6 @@
         <!-- Delivery is disabled by default via "null://localhost" -->
         <env name="MAILER_URL" value="null://localhost"/>
         <!-- ###- symfony/swiftmailer-bundle ### -->
-
-        <!-- ###+ snc/redis-bundle ### -->
-        <!-- passwords that contain special characters (@, %, :, +) must be urlencoded -->
-        <env name="REDIS_URL" value="redis://localhost"/>
-        <!-- ###- snc/redis-bundle ### -->
-
-        <!-- ###+ knplabs/knp-snappy-bundle ### -->
-        <env name="WKHTMLTOPDF_PATH" value="/usr/local/bin/wkhtmltopdf"/>
-        <env name="WKHTMLTOIMAGE_PATH" value="/usr/local/bin/wkhtmltoimage"/>
-        <!-- ###- knplabs/knp-snappy-bundle ### -->
     </php>
 
     <testsuites>

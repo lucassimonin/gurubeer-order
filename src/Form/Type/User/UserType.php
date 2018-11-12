@@ -40,7 +40,8 @@ class UserType extends AbstractType
             $builder->add('roles', ChoiceType::class, [
                 'choices' => [
                     'roles.super_admin' => 'ROLE_SUPER_ADMIN',
-                    'roles.admin' => 'ROLE_ADMIN'
+                    'roles.admin' => 'ROLE_ADMIN',
+                    'roles.preparator' => 'ROLE_PREPARATOR'
                 ],
                 'label' => 'admin.user.form.roles',
                 'multiple' => true,

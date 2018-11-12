@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * Class UserController
  *
  * @package App\Controller\Admin
- * @Route("/{_locale}/admin/users", requirements={ "_locale" = "%admin.locales%" })
+ * @Route("/users")
  */
 class UserController extends Controller
 {
@@ -213,12 +213,5 @@ class UserController extends Controller
         );
 
         return $this->redirect($request->headers->get('referer'));
-    }
-
-    public function googleAuthenticatorUrl($user)
-    {
-        return $this->render('admin/user/parts/google_qrcode.html.twig', [
-            'url' => $this->get("scheb_two_factor.security.google_authenticator")->getUrl($user)
-        ]);
     }
 }

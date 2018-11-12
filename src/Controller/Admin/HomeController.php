@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * Class HomeController
  *
  * @package App\Controller\Admin
- * @Route("/{_locale}/admin", requirements={ "_locale" = "%admin.locales%" })
+ * @Route("/")
  */
 class HomeController extends Controller
 {

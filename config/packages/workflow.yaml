@@ -1,0 +1,33 @@
+framework:
+    workflows:
+        version:
+            type: workflow # or 'state_machine'
+            marking_store:
+                type: 'single_state' # or 'single_state'
+                arguments:
+                - 'state'
+            supports:
+            - App\Entity\Order
+            places:
+            - draft
+            - in_progress
+            - preparation
+            - ready
+            - finish
+            transitions:
+                to_in_progress:
+                    guard: "is_fully_authenticated() and has_role('ROLE_SUPER_ADMIN')"
+                    from: draft
+                    to:   in_progress
+                to_preparation:
+                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    from: in_progress
+                    to:   preparation
+                to_ready:
+                    guard: "is_fully_authenticated() and has_role('ROLE_PREPARATOR')"
+                    from: preparation
+                    to:   ready
+                to_finish:
+                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    from: ready
+                    to:   finish

@@ -11,7 +11,6 @@ namespace App\DataFixtures;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
-use Scheb\TwoFactorBundle\Security\TwoFactor\Provider\Google\GoogleAuthenticatorInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class UserFixtures extends Fixture
@@ -21,12 +20,9 @@ class UserFixtures extends Fixture
 
     private $encoder;
 
-    private $authenticator;
-
-    public function __construct(UserPasswordEncoderInterface $encoder, GoogleAuthenticatorInterface $authenticator)
+    public function __construct(UserPasswordEncoderInterface $encoder)
     {
         $this->encoder = $encoder;
-        $this->authenticator = $authenticator;
     }
 
     public function load(ObjectManager $manager)
@@ -35,12 +31,11 @@ class UserFixtures extends Fixture
         $user = $this->addUser(array(
             'username' => 'admin',
             'firstname'=> 'admin',
-            'lastname' => 'admin'.'ing',
+            'lastname' => 'admin',
             'email'    => 'admin@gmail.com',
             'password' => 'admin',
             'role'     => 'ROLE_SUPER_ADMIN',
-            'enabled'  => true,
-            'secret'   => $this->authenticator->generateSecret()
+            'enabled'  => true
         ));
         $this->addReference('admin-user', $user);
     }

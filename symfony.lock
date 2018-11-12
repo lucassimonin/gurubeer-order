@@ -1,13 +1,4 @@
 {
-    "a2lix/auto-form-bundle": {
-        "version": "0.1"
-    },
-    "a2lix/translation-form-bundle": {
-        "version": "3.0.1"
-    },
-    "bacon/bacon-qr-code": {
-        "version": "1.0.3"
-    },
     "behat/transliterator": {
         "version": "v1.2.0"
     },
@@ -107,21 +98,6 @@
     "egulias/email-validator": {
         "version": "2.1.4"
     },
-    "endroid/installer": {
-        "version": "1.0.5"
-    },
-    "endroid/qr-code": {
-        "version": "3.4.4"
-    },
-    "endroid/qr-code-bundle": {
-        "version": "3.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "3.0",
-            "ref": "b9fcbe18b537c63bf61d3c3be8116a00a85c8e2e"
-        }
-    },
     "facebook/webdriver": {
         "version": "1.6.0"
     },
@@ -143,14 +119,8 @@
     "guzzlehttp/psr7": {
         "version": "1.4.2"
     },
-    "imagine/imagine": {
-        "version": "v0.7.1"
-    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
-    },
-    "khanamiryan/qrcode-detector-decoder": {
-        "version": "1.0.2"
     },
     "knplabs/doctrine-behaviors": {
         "version": "1.5.0"
@@ -161,35 +131,8 @@
     "knplabs/knp-paginator-bundle": {
         "version": "v2.7.2"
     },
-    "knplabs/knp-snappy": {
-        "version": "v1.0.4"
-    },
-    "knplabs/knp-snappy-bundle": {
-        "version": "1.5",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "1.5",
-            "ref": "c81bdcf4a9d4e7b1959071457f9608631865d381"
-        }
-    },
-    "lcobucci/jwt": {
-        "version": "3.2.4"
-    },
-    "liip/imagine-bundle": {
-        "version": "1.8",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "1.8",
-            "ref": "d2a601ea5ccad81de2a131ed68481d012ed4667c"
-        }
-    },
     "monolog/monolog": {
         "version": "1.23.0"
-    },
-    "myclabs/php-enum": {
-        "version": "1.6.2"
     },
     "nikic/php-parser": {
         "version": "v4.0.1"
@@ -257,9 +200,6 @@
     "phpdocumentor/type-resolver": {
         "version": "0.4.0"
     },
-    "predis/predis": {
-        "version": "v1.1.1"
-    },
     "psr/cache": {
         "version": "1.0.1"
     },
@@ -278,9 +218,6 @@
     "psr/simple-cache": {
         "version": "1.0.1"
     },
-    "scheb/two-factor-bundle": {
-        "version": "v3.12.0"
-    },
     "sensio/framework-extra-bundle": {
         "version": "4.0",
         "recipe": {
@@ -289,18 +226,6 @@
             "version": "4.0",
             "ref": "aaddfdf43cdecd4cf91f992052d76c2cadc04543"
         }
-    },
-    "snc/redis-bundle": {
-        "version": "2.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "2.0",
-            "ref": "e9c58bfc414cfb7f06e8e5ae9f589868498f5d6a"
-        }
-    },
-    "sonata-project/google-authenticator": {
-        "version": "2.2.0"
     },
     "stof/doctrine-extensions-bundle": {
         "version": "1.2",
@@ -576,6 +501,15 @@
             "branch": "master",
             "version": "1.0",
             "ref": "2b19a31caf3f036852e98ca1709651a4db1e73fb"
+        }
+    },
+    "symfony/workflow": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "7c8798612bf94fbe4cb75056a4cd7ea3a9183698"
         }
     },
     "symfony/yaml": {
