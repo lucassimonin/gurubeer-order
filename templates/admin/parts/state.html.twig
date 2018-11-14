@@ -1,0 +1,15 @@
+{% if state == 'wait_return' %}
+    {% set state_color = 'primary' %}
+{% elseif state == 'return_ok' %}
+    {% set state_color = 'warning' %}
+{% elseif state == 'wait_customer' %}
+    {% set state_color = 'info' %}
+{% elseif state == 'wait_palette' %}
+    {% set state_color = 'warning' %}
+{% elseif state == 'ready' %}
+    {% set state_color = 'info' %}
+{% elseif state == 'finish' %}
+    {% set state_color = 'success' %}
+{% endif %}
+
+<span style="vertical-align: middle" class="label label-{{ state_color }}">{{ ('admin.order.state.' ~ state)|trans({}, 'app') }}</span>

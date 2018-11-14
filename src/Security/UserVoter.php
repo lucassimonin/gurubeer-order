@@ -9,8 +9,6 @@
 namespace App\Security;
 
 use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
-use phpDocumentor\Reflection\Types\Self_;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface;
@@ -23,6 +21,8 @@ class UserVoter extends Voter
 {
     const USER_VIEW = 'user-view';
     const USER_DELETE = 'user-delete';
+    const ORDER_CREATE = 'order-create';
+    const EDIT_ITEM = 'edit-item';
 
     private $decisionManager;
 
@@ -43,7 +43,7 @@ class UserVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        if (!in_array($attribute, array(self::USER_VIEW), self::USER_DELETE)) {
+        if (!in_array($attribute, array(self::USER_VIEW, self::USER_DELETE, self::ORDER_CREATE, self::EDIT_ITEM))) {
             return false;
         }
 
@@ -70,6 +70,10 @@ class UserVoter extends Voter
         switch ($attribute) {
             case self::USER_VIEW:
                 return $this->userView($token);
+            case self::ORDER_CREATE:
+                return $this->createOrder($token);
+            case self::EDIT_ITEM:
+                return $this->editItem($token);
             case self::USER_DELETE:
                 return false;
             default:
@@ -85,5 +89,15 @@ class UserVoter extends Voter
     public function userView(TokenInterface $token)
     {
         return $this->decisionManager->decide($token, array(User::ROLE_SUPER_ADMIN));
+    }
+
+    public function createOrder($token)
+    {
+        return !$this->decisionManager->decide($token, array(User::ROLE_PREPARATOR));
+    }
+
+    public function editItem($token)
+    {
+        return $this->decisionManager->decide($token, array(User::ROLE_COMMERCIAL));
     }
 }

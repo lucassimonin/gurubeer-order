@@ -41,7 +41,7 @@ class UserController extends Controller
 
         // Breadcrumb
         $breadcrumbs = $this->get("white_october_breadcrumbs");
-        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_dashboard"));
+        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_order_list"));
         $breadcrumbs->addItem('admin.users.list.title');
 
 
@@ -90,7 +90,7 @@ class UserController extends Controller
         // Breadcrumb
         $breadcrumbs = $this->get("white_october_breadcrumbs");
 
-        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_dashboard"));
+        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_order_list"));
         $breadcrumbs->addItem("admin.users.list.title", $this->get("router")->generate("admin_user_list"));
         $breadcrumbs->addItem("admin.user.title.create");
 
@@ -103,14 +103,10 @@ class UserController extends Controller
 
         // Update method
         if ('POST' === $request->getMethod()) {
-            // Bind value with form
             $form->handleRequest($request);
-
             if ($form->isValid()) {
-                // Save
+                $user->addRole($user->getRole());
                 $userService->save($user);
-
-                // Launch the message flash
                 $this->get('session')->getFlashBag()->set(
                     'notice',
                     'admin.flash.created'
@@ -139,8 +135,8 @@ class UserController extends Controller
     }
 
     /**
-     * @param Request     $request
-     * @param             $id
+     * @param Request $request
+     * @param User $user
      * @param UserService $userService
      * @Route("/edit/{id}", name="admin_user_edit")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
@@ -149,7 +145,7 @@ class UserController extends Controller
     {
         // Breadcrumb
         $breadcrumbs = $this->get("white_october_breadcrumbs");
-        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_dashboard"));
+        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_order_list"));
         $breadcrumbs->addItem("admin.users.list.title", $this->get("router")->generate("admin_user_list"));
         $breadcrumbs->addItem("admin.user.title.edit");
 
@@ -165,11 +161,8 @@ class UserController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-
-                // Save
+                $user->addRole($user->getRole());
                 $userService->save($user);
-
-                // Launch the message flash
                 $this->get('session')->getFlashBag()->set(
                     'notice',
                     'admin.flash.updated'

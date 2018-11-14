@@ -1,18 +1,30 @@
 {% use "bootstrap_3_layout.html.twig" %}
 
-{# Rows #}
-{% block form_row -%}
-    <div class="form-group{% if (not compound or force_error|default(false)) and not valid %} has-error{% endif %}">
+{% block _order_items_widget %}
+    <table class="collections table {% if form.parent.vars.value.state == 'wait_palette'%}click-check{% endif %}" id="{{ form.vars.id }}" data-prototype="{{ form_widget(prototype)|e('html_attr') }}">
+        <thead>
+            <tr class="title">
+                <th>{{ 'admin.item.form.name'|trans({}, 'app') }}</th>
+                <th>{{ 'admin.component.order.label.type'|trans({}, 'app') }}</th>
+                <th>{{ 'admin.item.form.quantity'|trans({}, 'app') }}</th>
+                {% if is_granted('edit-item', app.user) %}
+                    <th>{{ 'admin.common.actions'|trans({}, 'app') }}</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for child in form %}
+                <tr class="{% if form.parent.vars.value.state == 'return_ok' %}{{ child.vars.value.getColor() }}{% endif %}">
+                    {% include 'admin/parts/row_item.html.twig' with {'form': child} %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
 
-        {{- form_label(form) -}}
-        {% if image_input is defined and image_input and form.vars.data %}
-            <br>
-           <img src="{{ asset('uploads/media/' ~ form.vars.data.filename) }}" class="img-responsive img-thumbnail">
-        {% endif %}
-        {{- form_widget(form) -}}
-        {{- form_errors(form) -}}
-    </div>
-{%- endblock form_row %}
+{% block _order_items_entry_widget %}
+    {% include 'admin/parts/row_item.html.twig' with {'form': form} %}
+{% endblock %}
 
 {%- block choice_widget_collapsed -%}
     {%- set attr = attr|merge({class: (attr.class|default('') ~ ' form-control')|trim}) -%}

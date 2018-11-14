@@ -6,6 +6,29 @@
     color:#333;
 }
 
+.orange {
+    background: rgba(230, 126, 34,.5);
+}
+
+.red {
+    background: rgba(231, 76, 60,.5);
+}
+
+.click-check tbody tr {
+    cursor: pointer;
+}
+.green {
+    background: rgba(46, 204, 113,.5);
+}
+
+.btn-palette {
+    width: 100%;
+    font-size: 16px;
+    font-weight: 700;
+    height: 50px;
+    line-height: 40px;
+}
+
 a > img {
     outline: none;
 }

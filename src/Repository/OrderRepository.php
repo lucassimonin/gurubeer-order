@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -12,10 +13,11 @@ use Doctrine\ORM\EntityRepository;
 class OrderRepository extends EntityRepository
 {
     /**
-     * @param array $filters
-     * @return mixed
+     * @param $filters
+     * @param User $user
+     * @return \Doctrine\ORM\Query
      */
-    public function queryForSearch($filters = array())
+    public function queryForSearch($filters, User $user)
     {
         $qb = $this->createQueryBuilder('o')
            ->orderBy('o.updated', 'DESC');
@@ -24,6 +26,10 @@ class OrderRepository extends EntityRepository
                 $qb->andWhere('o.'.$key.' LIKE :'.$key);
                 $qb->setParameter($key, '%'.$filter.'%');
             }
+        }
+        if (in_array(User::ROLE_COMMERCIAL, $user->getRoles())) {
+            $qb->andWhere('o.creator = :user')
+                ->setParameter('user', $user);
         }
 
         return $qb->getQuery();

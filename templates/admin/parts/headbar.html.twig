@@ -2,7 +2,7 @@
 <!-- Navbar -->
 <nav class="navbar px-navbar">
     <div class="navbar-header">
-        <a class="navbar-brand" href="{{ path('admin_dashboard') }}"><img src="{{ asset('images/admin/logo.png') }}" /> </a>
+        <a class="navbar-brand" href="{{ path('admin_order_list') }}"><img src="{{ asset('images/admin/logo.png') }}" /> </a>
     </div>
     <ul class="nav navbar-nav navbar-right" id="navbar-right">
         <li class="dropdown">
@@ -15,7 +15,7 @@
             <ul class="dropdown-menu" id="navbar-action-user">
                 <li><a href="{{ path('admin_user_edit', {'id': app.user.id}) }}"><i class="dropdown-icon fa fa-user"></i> {{ 'admin.comon.edit_profile'|trans({}, 'app') }}</a> </li>
                 {% if is_granted('ROLE_PREVIOUS_ADMIN') %}
-                    <li><a href="{{ path('admin_dashboard', {'_switch_user': '_exit'}) }}"><i class="dropdown-icon fa fa-user-secret"></i> {{ 'admin.common.exit_impersonation.title'|trans({}, 'app') }}</a></li>
+                    <li><a href="{{ path('admin_order_list', {'_switch_user': '_exit'}) }}"><i class="dropdown-icon fa fa-user-secret"></i> {{ 'admin.common.exit_impersonation.title'|trans({}, 'app') }}</a></li>
                 {% endif %}
                 <li><a href="{{ path('logout') }}"><i class="dropdown-icon fa fa-power-off"></i> {{ 'admin.common.logout.title'|trans({}, 'app') }}</a></li>
             </ul>

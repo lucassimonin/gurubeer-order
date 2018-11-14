@@ -9,6 +9,7 @@
 namespace App\Form\Type\Order;
 
 use App\Entity\Item;
+use App\Entity\Order;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -29,15 +30,23 @@ class ItemType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name', TextType::class, ['label' => 'admin.item.form.name']);
+        $attrQuantity = in_array($options['state'], Order::STATE_NO_EDIT_QUANTITY) ? ['readonly' => true] : [];
+        $quantityAttribute = $options['state'] === Order::STATE_WAIT_RETURN ? 'quantity' : 'quantityUpdated';
+        $builder->add('name', TextType::class, [
+            'label' => false,
+            'attr' => $attrQuantity
+        ]);
         $builder->add('type', ChoiceType::class, [
             'choices' => array_flip(Item::LIST_TYPE),
             'expanded' => false,
             'multiple' => false,
-            'label' => 'admin.component.order.label.type',
-            'attr' => ['class' => 'select2']
+            'label' => false,
         ]);
-        $builder->add('quantity', IntegerType::class, ['label' => 'admin.item.form.quantity']);
+
+        $builder->add($quantityAttribute, IntegerType::class, [
+            'label' => false,
+            'attr' => $attrQuantity
+        ]);
     }
 
     /**
@@ -49,7 +58,8 @@ class ItemType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => Item::class,
-            'translation_domain' => 'app'
+            'translation_domain' => 'app',
+            'state' => Order::STATE_DRAFT
         ));
     }
 }

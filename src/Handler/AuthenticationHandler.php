@@ -45,7 +45,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface
     {
         $url = 'homepage';
         if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
-            $url = 'admin_dashboard';
+            $url = 'admin_order_list';
         }
 
         return new RedirectResponse($this->router->generate($url));

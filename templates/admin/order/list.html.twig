@@ -7,9 +7,11 @@
 
 
 {% block options %}
-    <a class="btn btn-success btn-xs" href="{{ path('admin_order_create') }}">
-        <i class="fa fa-plus "></i> {{ 'admin.common.new.button'|trans({}, 'app') }}
-    </a>
+    {% if is_granted('order-create', app.user) %}
+        <a class="btn btn-success btn-xs" href="{{ path('admin_order_create') }}">
+            <i class="fa fa-plus "></i> {{ 'admin.common.new.button'|trans({}, 'app') }}
+        </a>
+    {% endif %}
     <a class="btn btn-info btn-xs btn-search-open" href="#">
         <i class="fa fa-search "></i> {{ 'admin.common.search.button'|trans({}, 'app') }}
     </a>
@@ -33,8 +35,13 @@
                 <table class="table no-margin-botton table-bordered table-hover table-striped">
                     <thead>
                     <tr>
+                        <th class="cansort {% if pagination.isSorted('u.created') %}sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'admin.common.created_at'|trans({}, 'app'), 'u.created') }} {% if pagination.isSorted('u.created') %} <i class="fa fa-sort-{{ pagination.getDirection() }} pull-right"></i>{% endif %}</th>
                         <th class="cansort {% if pagination.isSorted('u.name') %}sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'admin.common.form.name'|trans({}, 'app'), 'u.name') }} {% if pagination.isSorted('u.name') %} <i class="fa fa-sort-{{ pagination.getDirection() }} pull-right"></i>{% endif %}</th>
+                        {% if is_granted('ROLE_PREPARATOR') %}
+                            <th>{{ 'admin.common.creator'|trans({}, 'app') }}</th>
+                        {% endif %}
                         <th>{{ 'admin.common.state'|trans({}, 'app') }}</th>
+                        <th class="cansort {% if pagination.isSorted('u.updated') %}sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'admin.common.updated_at'|trans({}, 'app'), 'u.updated') }} {% if pagination.isSorted('u.updated') %} <i class="fa fa-sort-{{ pagination.getDirection() }} pull-right"></i>{% endif %}</th>
                         <th>{{ 'admin.common.actions'|trans({}, 'app') }}</th>
                     </tr>
                     </thead>
@@ -42,16 +49,32 @@
 
                     {% for order in pagination %}
                         <tr>
-
+                            <td style="vertical-align:middle; color:gray;">{{ order.created|date("m/d/Y h:i", "Europe/Paris") }}</td>
                             <td style="vertical-align:middle;"><a href="{{ path('admin_order_edit', {'id': order.id}) }}">{{ order.name }}</a></td>
-                            <td style="vertical-align:middle;">{{ order.state }}</td>
+                            {% if is_granted('ROLE_PREPARATOR') %}
+                                <td>
+                                    <a href="mailto:{{ order.creator.email }}">{{ order.creator.firstName ~ ' ' ~ order.creator.lastName }}</a>
+                                </td>
+                            {% endif %}
+                            <td style="vertical-align:middle;">{% include 'admin/parts/state.html.twig' with {'state': order.state} %}</td>
+                            <td style="vertical-align:middle; color:gray;">{{ order.updated|date("m/d/Y h:i", "Europe/Paris") }}</td>
                             <td style="text-align:center;vertical-align:middle;">
-                                {% if workflow_can(order, 'to_in_progress') or workflow_can(order, 'to_preparation') or workflow_can(order, 'to_ready') or workflow_can(order, 'to_finish') %}
+                                {% if workflow_can(order, 'to_wait_client') or
+                                    workflow_can(order, 'to_return_ok') or
+                                    workflow_can(order, 'to_return_wait_return') or
+                                    workflow_can(order, 'to_return_ok_wait_client') or
+                                    workflow_can(order, 'to_wait_palette') or
+                                    workflow_can(order, 'to_ready')
+                                %}
                                     <a href="{{ path('admin_order_edit', {'id': order.id}) }}" class="btn btn-default">
-                                        <i class="fa fa-edit"></i> {{ 'admin.common.update.button'|trans({}, 'app') }}
+                                        <i class="fa fa-eye"></i> {{ 'admin.common.see.button'|trans({}, 'app') }}
                                     </a>
                                 {% endif %}
-
+                                {% for transition in workflow_transitions(order) %}
+                                    {% if transition.name != 'to_ready' %}
+                                        <a href="{{ path('admin_order_apply_transition', {'id': order.id, 'transition': transition.name}) }}" class="btn btn-info">{{ ('admin.order.transition.' ~ transition.name)|trans({}, 'app') }}</a>
+                                    {% endif %}
+                                {% endfor %}
                                 {% if is_granted('order-delete', order) %}
                                     <a href="{{ path('admin_order_delete', {'id': order.id}) }}" class="btn btn-danger delete-button">
                                         <i class="fa fa-trash-o" style="color:white;transition: all 30s linear;"></i> {{ 'admin.common.delete.button'|trans({}, 'app') }}

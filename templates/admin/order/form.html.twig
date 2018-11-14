@@ -4,21 +4,26 @@
 {% block mainTitle %}
     <h1>{{ ('admin.order.title.' ~ type)|trans({}, 'app') }}</h1>
 {% endblock %}
-
+{% block menu %}
+{% endblock %}
 {% block content %}
     {{ form_start(form) }}
         <div class="row">
             <div class="col-md-12">
                 <div class="col-sm-12">
-
                     {{ form_widget(form) }}
                 </div>
-                <button class="btn btn-info btn-save">
-                    <i class="fa fa-save"></i> {{ ('admin.common.' ~ type ~ '.button')|trans({}, 'app') }}
-                </button>
-                {% if type == 'update' and workflow_can(order, 'to_in_progress') %}
-                    <a href="{{ path('admin_order_apply_transition', {'id': project.id, 'transition': 'to_in_progress'}) }}">IN PROGRESS</a>
+                {% if order.state == 'wait_palette'%}
+                    <a href="{{ path('admin_order_apply_transition', {'id': order.id, 'transition': 'to_ready'}) }}" class="btn btn-success btn-palette">{{ ('admin.order.transition.to_ready')|trans({}, 'app') }}</a>
+                {% else %}
+                    <button class="btn btn-info btn-save">
+                        {% if type == 'update' %}
+                            {% set type = 'save' %}
+                        {% endif %}
+                        <i class="fa fa-save"></i> {{ ('admin.common.' ~ type ~ '.button')|trans({}, 'app') }}
+                    </button>
                 {% endif %}
+                <a href="{{ path('admin_order_list') }}" class="btn btn-info">{{ ('admin.common.back')|trans({}, 'app') }}</a>
             </div>
         </div>
     {{ form_end(form) }}

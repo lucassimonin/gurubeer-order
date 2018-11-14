@@ -13,7 +13,7 @@
     {{ form_row(form.plainPassword.first) }}
     {{ form_row(form.plainPassword.second) }}
     {% if form.enabled is defined %}
-        {{ form_row(form.roles) }}
+        {{ form_row(form.role) }}
         {{ form_row(form.enabled) }}
     {% endif %}
 </div>

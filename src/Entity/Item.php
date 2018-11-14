@@ -17,13 +17,11 @@ use Doctrine\ORM\Mapping as ORM;
 class Item
 {
     public const TYPE_BARREL = 'barrel';
-    public const TYPE_CARTON = 'carton';
-    public const STATE_WAITING = 'waiting';
-    public const STATE_OK = 'ok';
+    public const TYPE_BOTTLE = 'bottle';
 
     public const LIST_TYPE = [
         self::TYPE_BARREL => 'admin.type.'.self::TYPE_BARREL,
-        self::TYPE_CARTON => 'admin.type.'.self::TYPE_CARTON
+        self::TYPE_BOTTLE => 'admin.type.'.self::TYPE_BOTTLE
     ];
     /**
      * @ORM\Column(type="integer")
@@ -41,7 +39,7 @@ class Item
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Order", inversedBy="items", fetch="EAGER")
      * @ORM\JoinColumn(nullable=true)
-     * @var Order
+     * @var Order|null
      */
     private $order;
 
@@ -52,16 +50,17 @@ class Item
     private $type = self::TYPE_BARREL;
 
     /**
-     * @var string
-     * @ORM\Column(type="string")
+     * @var int
+     * @ORM\Column(type="integer")
      */
-    private $state = self::STATE_WAITING;
+    private $quantity = 0;
 
     /**
      * @var int
      * @ORM\Column(type="integer")
      */
-    private $quantity = 0;
+    private $quantityUpdated = 0;
+
 
     /**
      * @return mixed
@@ -96,17 +95,17 @@ class Item
     }
 
     /**
-     * @return Order
+     * @return Order|null
      */
-    public function getOrder(): Order
+    public function getOrder(): ?Order
     {
         return $this->order;
     }
 
     /**
-     * @param Order $order
+     * @param Order|null $order
      */
-    public function setOrder(Order $order): void
+    public function setOrder(?Order $order): void
     {
         $this->order = $order;
     }
@@ -128,22 +127,6 @@ class Item
     }
 
     /**
-     * @return string
-     */
-    public function getState(): string
-    {
-        return $this->state;
-    }
-
-    /**
-     * @param string $state
-     */
-    public function setState(string $state): void
-    {
-        $this->state = $state;
-    }
-
-    /**
      * @return int
      */
     public function getQuantity(): int
@@ -157,5 +140,33 @@ class Item
     public function setQuantity(int $quantity): void
     {
         $this->quantity = $quantity;
+        $this->quantityUpdated = $quantity;
+    }
+
+    /**
+     * @return int
+     */
+    public function getQuantityUpdated(): int
+    {
+        return $this->quantityUpdated;
+    }
+
+    /**
+     * @param int $quantityUpdated
+     */
+    public function setQuantityUpdated(int $quantityUpdated): void
+    {
+        $this->quantityUpdated = $quantityUpdated;
+    }
+
+    public function getColor()
+    {
+        $color = '';
+        if ($this->quantityUpdated === 0) {
+            $color = 'red';
+        } elseif ($this->quantityUpdated !== $this->quantity) {
+            $color = 'orange';
+        }
+        return  $color;
     }
 }

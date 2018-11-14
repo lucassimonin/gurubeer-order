@@ -8,12 +8,14 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\Item;
 use App\Entity\Order;
 use App\Form\Model\SearchOrder;
 use App\Form\Type\Order\OrderType;
 use App\Form\Type\Order\SearchOrderType;
 use App\Security\OrderVoter;
 use App\Services\Order\OrderService;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,7 +25,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
  * Class OrderController
  *
  * @package App\Controller\Admin
- * @Route("/orders")
  */
 class OrderController extends Controller
 {
@@ -43,7 +44,7 @@ class OrderController extends Controller
 
     /**
      * @param Request     $request
-     * @Route("/list", name="admin_order_list")
+     * @Route("/", name="admin_order_list")
      * @return Response
      */
     public function list(Request $request)
@@ -52,12 +53,11 @@ class OrderController extends Controller
         $form = $this->createForm(SearchOrderType::class, $data);
 
         $breadcrumbs = $this->get("white_october_breadcrumbs");
-        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_dashboard"));
         $breadcrumbs->addItem('admin.order.list.title');
 
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-            $this->getDoctrine()->getRepository(Order::class)->queryForSearch($data->getSearchData()),
+            $this->getDoctrine()->getRepository(Order::class)->queryForSearch($data->getSearchData(), $this->getUser()),
             $request->query->get('page', 1),
             20
         );
@@ -71,23 +71,23 @@ class OrderController extends Controller
     /**
      * @param Request     $request
      * @param OrderService $orderService
-     * @Route("/create", name="admin_order_create")
+     * @Route("/order/create", name="admin_order_create")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function create(Request $request, OrderService $orderService)
     {
         $breadcrumbs = $this->get("white_october_breadcrumbs");
-        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_dashboard"));
-        $breadcrumbs->addItem("admin.order.list.title", $this->get("router")->generate("admin_order_list"));
+        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_order_list"));
         $breadcrumbs->addItem("admin.order.title.create");
 
         $order = new Order();
         $form = $this->createForm(OrderType::class, $order);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            $order->setCreator($this->getUser());
             $orderService->formatItems($order);
-            $this->get('workflow.state')
-                ->apply($order, Order::TRANSITION_IN_PROGRESS);
+            $this->get('workflow.order')
+                ->apply($order, Order::TRANSITION_WAIT_RETURN);
             $this->getDoctrine()->getManager()->flush();
             $this->get('session')->getFlashBag()->set(
                 'notice',
@@ -110,21 +110,32 @@ class OrderController extends Controller
      * @param Request $request
      * @param Order $order
      * @param OrderService $orderService
-     * @Route("/edit/{id}", name="admin_order_edit")
+     * @Route("/order/edit/{id}", name="admin_order_edit")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function edit(Request $request, Order $order, OrderService $orderService)
     {
         $breadcrumbs = $this->get("white_october_breadcrumbs");
-        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_dashboard"));
-        $breadcrumbs->addItem("admin.order.list.title", $this->get("router")->generate("admin_order_list"));
+        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_order_list"));
         $breadcrumbs->addItem("admin.order.title.update");
+
+        $originalItems = new ArrayCollection();
+        /** @var Item $thematic */
+        foreach ($order->getItems() as $item) {
+            $originalItems->add($item);
+        }
 
         $form = $this->createForm(OrderType::class, $order, [
             'create' => false
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
+            foreach ($originalItems as $item) {
+                if (false === $order->getItems()->contains($item)) {
+                    $order->removeItem($item);
+                    $orderService->remove($item);
+                }
+            }
             $orderService->save($order);
             $this->get('session')->getFlashBag()->set(
                 'notice',
@@ -138,7 +149,8 @@ class OrderController extends Controller
             'admin/order/form.html.twig',
             array(
                 'form' => $form->createView(),
-                'type' => 'update'
+                'type' => 'update',
+                'order' => $order
             )
         );
     }
@@ -146,7 +158,7 @@ class OrderController extends Controller
     /**
      * @param Order $order
      * @param OrderService $orderService
-     * @Route("/delete/{id}", name="admin_order_delete")
+     * @Route("/order/delete/{id}", name="admin_order_delete")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function delete(Order $order, OrderService $orderService)
@@ -158,6 +170,35 @@ class OrderController extends Controller
             'admin.flash.removed'
         );
 
+        return $this->redirectToRoute('admin_order_list');
+    }
+
+    /**
+     * @param $transition
+     * @param Order $order
+     * @Route("/order/{id}/apply-transition/{transition}", name="admin_order_apply_transition")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function applyTransition($transition, Order $order)
+    {
+        $manager = $this->getDoctrine()->getManager();
+        try {
+            if (in_array($transition, Order::TRANSITION_AVAILABLE)) {
+                $this->get('workflow.order')
+                    ->apply($order, $transition);
+                $manager->flush();
+                if (in_array($transition, [Order::TRANSITION_WAIT_RETURN, Order::TRANSITION_CUSTOMER_RETURN])) {
+                    /** @var Item $item */
+                    foreach ($order->getItems() as $item) {
+                        $item->setQuantity($item->getQuantityUpdated());
+                        $manager->persist($item);
+                    }
+                    $manager->flush();
+                }
+            }
+        } catch (\Exception $e) {
+            $this->get('session')->getFlashBag()->add('danger', $e->getMessage());
+        }
         return $this->redirectToRoute('admin_order_list');
     }
 }

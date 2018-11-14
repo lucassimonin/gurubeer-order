@@ -3,7 +3,7 @@
 {% block content %}
     {% if is_granted('ROLE_ADMIN') %}
         <script>
-            document.location.href="{{ path('admin_dashboard') }}"
+            document.location.href="{{ path('admin_order_list') }}"
         </script>
     {% endif %}
     {% if error %}

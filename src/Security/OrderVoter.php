@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Authorization\AccessDecisionManagerInterface
  */
 class OrderVoter extends Voter
 {
-    const ORDER_DELETE = 'delete';
+    const ORDER_DELETE = 'order-delete';
 
     private $decisionManager;
 
@@ -64,12 +64,20 @@ class OrderVoter extends Voter
         if ($this->decisionManager->decide($token, array(User::ROLE_SUPER_ADMIN))) {
             return true;
         }
+        $order = $subject;
+        /** @var User $user */
+        $user = $token->getUser();
 
         switch ($attribute) {
             case self::ORDER_DELETE:
-                return false;
+                return $this->canDelete($order, $user);
             default:
                 return true;
         }
+    }
+
+    public function canDelete(Order $order, User $user)
+    {
+        return $order->getCreator()->getId() === $user->getId();
     }
 }

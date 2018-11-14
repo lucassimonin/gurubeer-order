@@ -8,6 +8,7 @@
 
 namespace App\Services\Order;
 
+use App\Entity\Item;
 use App\Entity\Order;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -46,6 +47,16 @@ class OrderService
 
     public function formatItems(Order $order)
     {
+        $text = trim($order->getItemsText());
+        $textAr = explode("\n", $text);
+        foreach ($textAr as $line) {
+            if (empty(trim($line))) {
+                continue;
+            }
+            $item = new Item();
+            $item->setName(trim($line));
+            $order->addItem($item);
+        }
         $this->save($order);
     }
 

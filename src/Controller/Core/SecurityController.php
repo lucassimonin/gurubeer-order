@@ -23,7 +23,7 @@ class SecurityController extends Controller
     public function login(Request $request, AuthenticationUtils $authUtils)
     {
         if (null !== $this->getUser()) {
-            return $this->redirectToRoute('admin_dashboard');
+            return $this->redirectToRoute('admin_order_list');
         }
         // get the login error if there is one
         $error = $authUtils->getLastAuthenticationError();

@@ -44,6 +44,11 @@
                 src="https://code.jquery.com/jquery-1.12.4.min.js"
                 integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
                 crossorigin="anonymous"></script>
+        <script>
+            var add_label = "{{ 'admin.common.add'|trans({}, 'app') }}";
+            var delete_label = "{{ 'admin.common.delete'|trans({}, 'app') }}";
+            var editItem = {% if is_granted('edit-item', app.user) %}1{% else %}0{% endif %};
+        </script>
         <script src="{{ asset('build/admin/js/app.js') }}"></script>
     {% endblock %}
 </body>

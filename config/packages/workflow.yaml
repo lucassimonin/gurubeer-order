@@ -1,6 +1,6 @@
 framework:
     workflows:
-        version:
+        order:
             type: workflow # or 'state_machine'
             marking_store:
                 type: 'single_state' # or 'single_state'
@@ -10,24 +10,46 @@ framework:
             - App\Entity\Order
             places:
             - draft
-            - in_progress
-            - preparation
+            - wait_return
+            - return_ok
+            - wait_customer
             - ready
+            - wait_palette
             - finish
             transitions:
-                to_in_progress:
-                    guard: "is_fully_authenticated() and has_role('ROLE_SUPER_ADMIN')"
-                    from: draft
-                    to:   in_progress
-                to_preparation:
+                to_wait_return:
                     guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
-                    from: in_progress
-                    to:   preparation
+                    from: draft
+                    to:   wait_return
+                to_wait_customer:
+                    guard: "is_fully_authenticated() and has_role('ROLE_PREPARATOR')"
+                    from: wait_return
+                    to:   wait_customer
+                to_return_ok:
+                    guard: "is_fully_authenticated() and has_role('ROLE_PREPARATOR')"
+                    from: wait_return
+                    to:   return_ok
+                to_return_wait_return:
+                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    from: return_ok
+                    to: wait_return
+                to_return_ok_wait_customer:
+                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    from: return_ok
+                    to:   wait_customer
+                to_wait_customer_wait_return:
+                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    from: wait_customer
+                    to: wait_return
+                to_wait_palette:
+                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    from: wait_customer
+                    to:   wait_palette
                 to_ready:
                     guard: "is_fully_authenticated() and has_role('ROLE_PREPARATOR')"
-                    from: preparation
+                    from: wait_palette
                     to:   ready
                 to_finish:
-                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    guard: "is_fully_authenticated() and has_role('ROLE_PREPARATOR')"
                     from: ready
                     to:   finish

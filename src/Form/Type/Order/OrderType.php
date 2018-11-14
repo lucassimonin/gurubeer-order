@@ -9,7 +9,6 @@
 namespace App\Form\Type\Order;
 
 use App\Entity\Order;
-use App\Form\Type\Order\ItemType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -30,13 +29,17 @@ class OrderType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name', TextType::class, ['label' => 'admin.order.form.name']);
+        /** @var Order $order */
+        $order = $builder->getData();
+        $builder->add('name', TextType::class, [
+            'label' => 'admin.order.form.name'
+        ]);
         if ($options['create']) {
             $builder->add('itemsText', TextareaType::class, ['label' => 'admin.order.form.items_text']);
         } else {
             $builder->add('items', CollectionType::class, array(
                 'entry_type' => ItemType::class,
-                'entry_options' => array('label' => false),
+                'entry_options' => array('label' => false, 'state' => $order->getState()),
                 'allow_add' => true,
                 'by_reference' => false,
                 'allow_delete' => true,

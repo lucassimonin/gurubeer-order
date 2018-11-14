@@ -20,12 +20,29 @@ class Order
 {
     use TimestampableTrait;
     public const STATE_DRAFT = 'draft';
-    public const STATE_IN_PROGRESS = 'in_progress';
-    public const STATE_PREPARATION = 'preparation';
+    public const STATE_WAIT_RETURN = 'wait_return';
+    public const STATE_RETURN_OK = 'return_ok';
+    public const STATE_WAIT_CUSTOMER = 'wait_customer';
     public const STATE_READY = 'ready';
     public const STATE_FINISH = 'finish';
-    public const TRANSITION_IN_PROGRESS = 'to_in_progress';
-    public const TRANSITION_AVAILABLE = ['to_in_progress', 'to_preparation', 'to_ready', 'to_finish'];
+    public const STATE_NO_EDIT_QUANTITY = [
+        'ready',
+        'finish',
+        'wait_palette'
+    ];
+    public const TRANSITION_WAIT_RETURN = 'to_return_wait_return';
+    public const TRANSITION_CUSTOMER_RETURN = 'to_wait_customer_wait_return';
+    public const TRANSITION_AVAILABLE = [
+        'to_wait_return',
+        'to_wait_customer',
+        'to_return_ok',
+        'to_return_wait_return',
+        'to_return_ok_wait_customer',
+        'to_ready',
+        'to_finish',
+        'to_wait_palette',
+        'to_wait_customer_wait_return'
+    ];
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -50,6 +67,15 @@ class Order
      * @var ArrayCollection
      */
     private $items;
+
+    /**
+     * Creator
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(name="creator_id", referencedColumnName="id")
+     * @var User|null
+     */
+    protected $creator;
 
     /**
      * @var string|null
@@ -115,7 +141,7 @@ class Order
     /**
      * @return ArrayCollection
      */
-    public function getItems(): ArrayCollection
+    public function getItems()
     {
         return $this->items;
     }
@@ -169,6 +195,22 @@ class Order
     public function isEmpty(): bool
     {
         return $this->items->isEmpty();
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getCreator(): ?User
+    {
+        return $this->creator;
+    }
+
+    /**
+     * @param User|null $creator
+     */
+    public function setCreator(?User $creator): void
+    {
+        $this->creator = $creator;
     }
 
     /**

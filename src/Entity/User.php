@@ -16,9 +16,10 @@ class User implements UserInterface, \Serializable
 {
     use TimestampableTrait;
     const PATTERN_EMAIL = '/^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,}$/';
-    const ROLE_DEFAULT = 'ROLE_ADMIN';
+    const ROLE_DEFAULT = 'ROLE_COMMERCIAL';
     const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
     const ROLE_PREPARATOR = 'ROLE_PREPARATOR';
+    const ROLE_COMMERCIAL = 'ROLE_COMMERCIAL';
 
     /**
      * @ORM\Column(type="integer")
@@ -80,6 +81,8 @@ class User implements UserInterface, \Serializable
      */
     private $roles;
 
+    private $role;
+
     /**
      * @var boolean
      * @ORM\Column(name="enabled", type="boolean")
@@ -117,7 +120,7 @@ class User implements UserInterface, \Serializable
     public function __construct($enabled = false)
     {
         $this->enabled = $enabled;
-        $this->roles = [];
+        $this->role = self::ROLE_DEFAULT;
     }
 
     /**
@@ -135,14 +138,7 @@ class User implements UserInterface, \Serializable
      */
     public function addRole($role)
     {
-        $role = strtoupper($role);
-        if ($role === static::ROLE_DEFAULT) {
-            return $this;
-        }
-
-        if (!in_array($role, $this->roles, true)) {
-            $this->roles[] = $role;
-        }
+        $this->setRoles([$role]);
 
         return $this;
     }
@@ -336,6 +332,26 @@ class User implements UserInterface, \Serializable
     public function hasRole($role)
     {
         return in_array(strtoupper($role), $this->getRoles(), true);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRole()
+    {
+        if (null !== $this->role) {
+            return $this->role;
+        }
+
+        return isset($this->roles[0]) ? $this->roles[0] : self::ROLE_DEFAULT;
+    }
+
+    /**
+     * @param mixed $role
+     */
+    public function setRole($role): void
+    {
+        $this->role = $role;
     }
 
     /**

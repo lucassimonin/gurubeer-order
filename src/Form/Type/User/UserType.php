@@ -37,15 +37,14 @@ class UserType extends AbstractType
             'required' => true
         ]);
         if ($options['admin']) {
-            $builder->add('roles', ChoiceType::class, [
+            $builder->add('role', ChoiceType::class, [
                 'choices' => [
                     'roles.super_admin' => 'ROLE_SUPER_ADMIN',
-                    'roles.admin' => 'ROLE_ADMIN',
+                    'roles.commercial' => 'ROLE_COMMERCIAL',
                     'roles.preparator' => 'ROLE_PREPARATOR'
                 ],
                 'label' => 'admin.user.form.roles',
-                'multiple' => true,
-                'not_real_multiple' => true
+                'multiple' => false
             ]);
         }
         $builder->add('firstName', TextType::class, ['label' => 'admin.user.form.firstname']);

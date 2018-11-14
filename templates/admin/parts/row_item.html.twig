@@ -1,0 +1,16 @@
+<td>
+    {{ form_widget(form.name) }}
+</td>
+<td>
+    {{ form_widget(form.type) }}
+</td>
+{% if form.quantity is defined %}
+    <td>
+        {{ form_widget(form.quantity) }}
+    </td>
+{% endif %}
+{% if form.quantityUpdated is defined %}
+    <td>
+        {{ form_widget(form.quantityUpdated) }}
+    </td>
+{% endif %}
