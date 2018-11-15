@@ -14,7 +14,9 @@
 <body id="{% block bodyId %}{% endblock %}">
     {% trans_default_domain 'app' %}
     {% block menu %}
-        {% include "admin/parts/menu.html.twig" %}
+        {% if is_granted('user-view', app.user) %}
+            {% include "admin/parts/menu.html.twig" %}
+        {% endif %}
     {% endblock %}
     {% block headbar %}
         {% include "admin/parts/headbar.html.twig" %}
@@ -47,7 +49,6 @@
         <script>
             var add_label = "{{ 'admin.common.add'|trans({}, 'app') }}";
             var delete_label = "{{ 'admin.common.delete'|trans({}, 'app') }}";
-            var editItem = {% if is_granted('edit-item', app.user) %}1{% else %}0{% endif %};
         </script>
         <script src="{{ asset('build/admin/js/app.js') }}"></script>
     {% endblock %}

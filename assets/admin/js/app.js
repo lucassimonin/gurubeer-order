@@ -73,8 +73,6 @@ function initCollection()
 }
 
 jQuery(document).ready(function() {
-    if (editItem) {
-        initCollection();
-    }
+    initCollection();
 });
 
