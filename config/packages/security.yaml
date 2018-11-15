@@ -24,7 +24,7 @@ security:
                 csrf_token_generator: security.csrf.token_manager
             logout:
                 path:   /logout
-                target: homepage
+                target: login
             remember_me:
                 secret:   '%env(APP_SECRET)%'
                 lifetime: 604800 # 1 week in seconds

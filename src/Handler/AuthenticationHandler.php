@@ -43,7 +43,7 @@ class AuthenticationHandler implements AuthenticationSuccessHandlerInterface
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token)
     {
-        $url = 'homepage';
+        $url = 'login';
         if ($this->authorizationChecker->isGranted('ROLE_ADMIN')) {
             $url = 'admin_order_list';
         }
