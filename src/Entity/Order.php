@@ -30,7 +30,7 @@ class Order
         'finish',
         'wait_palette'
     ];
-    public const TRANSITION_WAIT_RETURN = 'to_return_wait_return';
+    public const TRANSITION_WAIT_RETURN = 'to_wait_return';
     public const TRANSITION_CUSTOMER_RETURN = 'to_wait_customer_wait_return';
     public const TRANSITION_AVAILABLE = [
         'to_wait_return',
