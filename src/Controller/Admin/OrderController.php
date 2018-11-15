@@ -166,7 +166,9 @@ class OrderController extends Controller
     public function delete(Order $order, OrderService $orderService, FileUploader $fileUploader)
     {
         $this->denyAccessUnlessGranted(OrderVoter::ORDER_DELETE, $order);
-        unlink($fileUploader->getTargetDirectory().'/'.$order->getPdf()->getFileName());
+        if (null !== $order->getFileName()) {
+            unlink($fileUploader->getTargetDirectory().'/'.$order->getFileName());
+        }
         $orderService->remove($order);
         $this->get('session')->getFlashBag()->set(
             'notice',
