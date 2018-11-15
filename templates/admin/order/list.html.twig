@@ -7,11 +7,9 @@
 
 
 {% block options %}
-    {% if is_granted('order-create', app.user) %}
-        <a class="btn btn-success btn-xs" href="{{ path('admin_order_create') }}">
-            <i class="fa fa-plus "></i> {{ 'admin.common.new.button'|trans({}, 'app') }}
-        </a>
-    {% endif %}
+    <a class="btn btn-success btn-xs" href="{{ path('admin_order_create') }}">
+        <i class="fa fa-plus "></i> {{ 'admin.common.new.button'|trans({}, 'app') }}
+    </a>
     <a class="btn btn-info btn-xs btn-search-open" href="#">
         <i class="fa fa-search "></i> {{ 'admin.common.search.button'|trans({}, 'app') }}
     </a>
