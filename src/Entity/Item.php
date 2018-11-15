@@ -19,6 +19,9 @@ class Item
     public const TYPE_BARREL = 'barrel';
     public const TYPE_BOTTLE = 'bottle';
 
+    public const STATE_UPDATED = 'updated';
+    public const STATE_NO_CHANGE = 'no_change';
+
     public const LIST_TYPE = [
         self::TYPE_BARREL => 'admin.type.'.self::TYPE_BARREL,
         self::TYPE_BOTTLE => 'admin.type.'.self::TYPE_BOTTLE
@@ -42,6 +45,12 @@ class Item
      * @var Order|null
      */
     private $order;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    private $state = self::STATE_NO_CHANGE;
 
     /**
      * @var string
@@ -159,12 +168,28 @@ class Item
         $this->quantityUpdated = $quantityUpdated;
     }
 
+    /**
+     * @return string
+     */
+    public function getState(): string
+    {
+        return $this->state;
+    }
+
+    /**
+     * @param string $state
+     */
+    public function setState(string $state): void
+    {
+        $this->state = $state;
+    }
+
     public function getColor()
     {
         $color = '';
         if ($this->quantityUpdated === 0) {
             $color = 'red';
-        } elseif ($this->quantityUpdated !== $this->quantity) {
+        } elseif ($this->state === self::STATE_UPDATED) {
             $color = 'orange';
         }
         return  $color;

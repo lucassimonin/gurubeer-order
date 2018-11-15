@@ -5,6 +5,7 @@ parameters:
     admin.locales: "fr"
     admin.locales.available: ["fr"]
     validator.translation_domain: 'app'
+    media_directory: '%kernel.project_dir%/public/uploads/media'
 
 services:
     # default configuration for services in *this* file
@@ -27,9 +28,11 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
-    # Extension
+    App\EventListener\MediaUploadListener:
+        tags:
+        - { name: doctrine.event_listener, event: prePersist }
+        - { name: doctrine.event_listener, event: preUpdate }
+        - { name: doctrine.event_listener, event: postLoad }
 
     App\Form\Extension\ChoiceExtension:
         tags:
@@ -37,3 +40,7 @@ services:
 
     authentication_handler:
         class: App\Handler\AuthenticationHandler
+
+    App\Services\Core\FileUploader:
+        arguments:
+            $targetDirectory: '%media_directory%'

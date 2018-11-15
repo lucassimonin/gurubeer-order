@@ -13,7 +13,6 @@ framework:
             - wait_return
             - return_ok
             - wait_customer
-            - return_customer
             - ready
             - wait_palette
             - finish

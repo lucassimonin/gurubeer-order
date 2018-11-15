@@ -1,4 +1,7 @@
 {% if state == 'wait_return' %}
+    {% if before == 'wait_customer' %}
+        {% set state = 'customer_return' %}
+    {% endif %}
     {% set state_color = 'primary' %}
 {% elseif state == 'return_ok' %}
     {% set state_color = 'warning' %}

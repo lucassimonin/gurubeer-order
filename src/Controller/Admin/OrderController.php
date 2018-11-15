@@ -11,9 +11,11 @@ namespace App\Controller\Admin;
 use App\Entity\Item;
 use App\Entity\Order;
 use App\Form\Model\SearchOrder;
+use App\Form\Type\Order\OrderMediaType;
 use App\Form\Type\Order\OrderType;
 use App\Form\Type\Order\SearchOrderType;
 use App\Security\OrderVoter;
+use App\Services\Core\FileUploader;
 use App\Services\Order\OrderService;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\HttpFoundation\Request;
@@ -161,9 +163,10 @@ class OrderController extends Controller
      * @Route("/order/delete/{id}", name="admin_order_delete")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function delete(Order $order, OrderService $orderService)
+    public function delete(Order $order, OrderService $orderService, FileUploader $fileUploader)
     {
         $this->denyAccessUnlessGranted(OrderVoter::ORDER_DELETE, $order);
+        unlink($fileUploader->getTargetDirectory().'/'.$order->getPdf()->getFileName());
         $orderService->remove($order);
         $this->get('session')->getFlashBag()->set(
             'notice',
@@ -182,23 +185,60 @@ class OrderController extends Controller
     public function applyTransition($transition, Order $order)
     {
         $manager = $this->getDoctrine()->getManager();
+        $order->setBeforeState($order->getState());
         try {
             if (in_array($transition, Order::TRANSITION_AVAILABLE)) {
                 $this->get('workflow.order')
                     ->apply($order, $transition);
                 $manager->flush();
-                if (in_array($transition, [Order::TRANSITION_WAIT_RETURN, Order::TRANSITION_CUSTOMER_RETURN])) {
-                    /** @var Item $item */
-                    foreach ($order->getItems() as $item) {
-                        $item->setQuantity($item->getQuantityUpdated());
-                        $manager->persist($item);
+                /** @var Item $item */
+                foreach ($order->getItems() as $item) {
+                    if ($item->getQuantityUpdated() !== $item->getQuantity()) {
+                        $item->setState(Item::STATE_UPDATED);
+                    } else {
+                        $item->setState(Item::STATE_NO_CHANGE);
                     }
-                    $manager->flush();
+                    $item->setQuantity($item->getQuantityUpdated());
+                    $manager->persist($item);
                 }
+                $manager->flush();
             }
         } catch (\Exception $e) {
             $this->get('session')->getFlashBag()->add('danger', $e->getMessage());
         }
         return $this->redirectToRoute('admin_order_list');
+    }
+
+    /**
+     * @param Request $request
+     * @param Order $order
+     * @param OrderService $orderService
+     * @Route("/order/pdf/{id}", name="admin_order_save_pdf")
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function savePdf(Request $request, Order $order, OrderService $orderService)
+    {
+        $form = $this->createForm(OrderMediaType::class, $order);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $orderService->save($order);
+            $this->get('session')->getFlashBag()->set(
+                'notice',
+                'admin.flash.updated'
+            );
+        }
+
+        return $this->redirectToRoute('admin_order_list');
+    }
+
+    public function pdfForm(Order $order)
+    {
+        $form = $this->createForm(OrderMediaType::class, $order);
+
+        return $this->render('admin/order/form_media.html.twig',
+            [
+                'form' => $form->createView(),
+                'order_id' => $order->getId()
+            ]);
     }
 }

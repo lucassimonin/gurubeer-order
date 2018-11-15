@@ -10,7 +10,10 @@ namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Table(name="gurubeer_order")
@@ -63,6 +66,12 @@ class Order
     private $state = self::STATE_DRAFT;
 
     /**
+     * @var string
+     * @ORM\Column(type="string")
+     */
+    private $beforeState = self::STATE_DRAFT;
+
+    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Item", mappedBy="order", cascade={"persist", "remove"})
      * @var ArrayCollection
      */
@@ -81,6 +90,19 @@ class Order
      * @var string|null
      */
     private $itemsText;
+
+    /**
+     *
+     * @Assert\File(mimeTypes={ "application/pdf" })
+     * @var UploadedFile|File
+     */
+    private $pdf;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $fileName;
 
     /**
      * Order constructor.
@@ -136,6 +158,22 @@ class Order
     public function setState(string $state): void
     {
         $this->state = $state;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBeforeState(): string
+    {
+        return $this->beforeState;
+    }
+
+    /**
+     * @param string $beforeState
+     */
+    public function setBeforeState(string $beforeState): void
+    {
+        $this->beforeState = $beforeState;
     }
 
     /**
@@ -227,5 +265,37 @@ class Order
     public function setItemsText(?string $itemsText): void
     {
         $this->itemsText = $itemsText;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPdf()
+    {
+        return $this->pdf;
+    }
+
+    /**
+     * @param $pdf
+     */
+    public function setPdf( $pdf): void
+    {
+        $this->pdf = $pdf;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFileName(): ?string
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param string $fileName
+     */
+    public function setFileName(string $fileName): void
+    {
+        $this->fileName = $fileName;
     }
 }

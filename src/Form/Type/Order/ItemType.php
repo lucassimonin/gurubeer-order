@@ -31,7 +31,7 @@ class ItemType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $attrQuantity = in_array($options['state'], Order::STATE_NO_EDIT_QUANTITY) ? ['readonly' => true] : [];
-        $quantityAttribute = $options['state'] === Order::STATE_WAIT_RETURN ? 'quantity' : 'quantityUpdated';
+        $quantityAttribute = $options['state'] === Order::STATE_DRAFT ? 'quantity' : 'quantityUpdated';
         $builder->add('name', TextType::class, [
             'label' => false,
             'attr' => $attrQuantity

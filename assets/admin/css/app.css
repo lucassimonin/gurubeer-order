@@ -32,9 +32,6 @@
 a > img {
     outline: none;
 }
-.btn {
-    margin-top: 5px;
-}
 
 
 .cansort a:hover{
@@ -274,7 +271,7 @@ div.px-nav-dropdown-menu-title {
 }
 
 .inputlogin.login {
-    background: url("../images/IconUsername.svg") no-repeat 26px center;
+    background: url("../../../images/IconUsername.svg") no-repeat 26px center;
 }
 
 .aa-input-container {
@@ -326,7 +323,7 @@ div.px-nav-dropdown-menu-title {
 
 
 .inputlogin.password {
-    background: url("../images/IconLock.svg") no-repeat 26px center;
+    background: url("../../../images/IconLock.svg") no-repeat 26px center;
 }
 
 .container-pdf {

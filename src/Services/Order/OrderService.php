@@ -39,6 +39,7 @@ class OrderService
     public function save($content)
     {
         // Save user
+        $content->setUpdated(new \DateTime());
         $this->em->persist($content);
         $this->em->flush();
 

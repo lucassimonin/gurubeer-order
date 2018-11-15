@@ -7,14 +7,12 @@
                 <th>{{ 'admin.item.form.name'|trans({}, 'app') }}</th>
                 <th>{{ 'admin.component.order.label.type'|trans({}, 'app') }}</th>
                 <th>{{ 'admin.item.form.quantity'|trans({}, 'app') }}</th>
-                {% if is_granted('edit-item', app.user) %}
-                    <th>{{ 'admin.common.actions'|trans({}, 'app') }}</th>
-                {% endif %}
+                <th>{{ 'admin.common.actions'|trans({}, 'app') }}</th>
             </tr>
         </thead>
         <tbody>
             {% for child in form %}
-                <tr class="{% if form.parent.vars.value.state == 'return_ok' %}{{ child.vars.value.getColor() }}{% endif %}">
+                <tr {% if form.parent.vars.value.beforeState != 'draft' %}class="{{ child.vars.value.getColor() }}"{% endif %}>
                     {% include 'admin/parts/row_item.html.twig' with {'form': child} %}
                 </tr>
             {% endfor %}
