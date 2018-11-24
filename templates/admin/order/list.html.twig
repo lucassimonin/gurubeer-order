@@ -49,7 +49,7 @@
                     {% for order in pagination %}
                         <tr>
                             <td style="vertical-align:middle; color:gray;">{{ order.created|date("m/d/Y h:i", "Europe/Paris") }}</td>
-                            <td style="vertical-align:middle;"><a href="{{ path('admin_order_edit', {'id': order.id}) }}">{{ order.name }}</a></td>
+                            <td style="vertical-align:middle;">{{ order.name }}</td>
                             {% if is_granted('ROLE_PREPARATOR') %}
                                 <td>
                                     <a href="mailto:{{ order.creator.email }}">{{ order.creator.firstName ~ ' ' ~ order.creator.lastName }}</a>
