@@ -48,7 +48,7 @@
 
                     {% for order in pagination %}
                         <tr>
-                            <td style="vertical-align:middle; color:gray;">{{ order.created|date("m/d/Y h:i", "Europe/Paris") }}</td>
+                            <td style="vertical-align:middle; color:gray;">{{ order.created|date("d/m/Y h:i", "Europe/Paris") }}</td>
                             <td style="vertical-align:middle;">{{ order.name }}</td>
                             {% if is_granted('ROLE_PREPARATOR') %}
                                 <td>
@@ -56,7 +56,7 @@
                                 </td>
                             {% endif %}
                             <td style="vertical-align:middle;">{% include 'admin/parts/state.html.twig' with {'state': order.state, 'before': order.beforeState} %}</td>
-                            <td style="vertical-align:middle; color:gray;">{{ order.updated|date("m/d/Y h:i", "Europe/Paris") }}</td>
+                            <td style="vertical-align:middle; color:gray;">{{ order.updated|date("d/m/Y h:i", "Europe/Paris") }}</td>
                             <td>
                                 {% if workflow_can(order, 'to_finish') %}
                                     {{ render(controller('App\\Controller\\Admin\\OrderController::pdfForm', { 'order': order  })) }}

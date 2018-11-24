@@ -67,7 +67,7 @@
                             </td>
                             <td style="vertical-align:middle;"><a href="{{ path('admin_user_edit', {'id': user.id}) }}">{{ user.lastName }}</a></td>
                             <td style="vertical-align:middle;"><a href="{{ path('admin_user_edit', {'id': user.id}) }}">{{ user.email }}</a></td>
-                            <td style="vertical-align:middle; color:gray;font-size: 11px;">{{ user.created|date("m/d/Y h:i", "Europe/Paris") }}</td>
+                            <td style="vertical-align:middle; color:gray;font-size: 11px;">{{ user.created|date("d/m/Y h:i", "Europe/Paris") }}</td>
                             <td style="vertical-align:middle; color:gray;font-size: 11px;">
                                 {% for role in user.roles %}
                                     {{ (role|replace({'ROLE_': 'roles.'})|lower)|trans({}, 'app') }}
