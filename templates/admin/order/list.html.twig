@@ -58,7 +58,9 @@
                             <td>{% include 'admin/parts/state.html.twig' with {'state': order.state, 'before': order.beforeState} %}</td>
                             <td style="color:gray;width:105px;">{{ order.updated|date("d/m/Y H:i", "Europe/Paris") }}</td>
                             <td>
-                                {{ render(controller('App\\Controller\\Admin\\OrderController::pdfForm', { 'order': order  })) }}
+                                {% if order.state != 'finish' %}
+                                    {{ render(controller('App\\Controller\\Admin\\OrderController::pdfForm', { 'order': order  })) }}
+                                {% endif %}
                             </td>
                             <td style="text-align:center;" id="actions">
                                 {% if workflow_can(order, 'to_wait_client') or
