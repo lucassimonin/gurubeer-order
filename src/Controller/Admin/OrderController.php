@@ -53,10 +53,6 @@ class OrderController extends Controller
     {
         $data = $this->initSearch($request);
         $form = $this->createForm(SearchOrderType::class, $data);
-
-        $breadcrumbs = $this->get("white_october_breadcrumbs");
-        $breadcrumbs->addItem('admin.order.list.title');
-
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
             $this->getDoctrine()->getRepository(Order::class)->queryForSearch($data->getSearchData(), $this->getUser()),
@@ -78,10 +74,6 @@ class OrderController extends Controller
      */
     public function create(Request $request, OrderService $orderService)
     {
-        $breadcrumbs = $this->get("white_october_breadcrumbs");
-        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_order_list"));
-        $breadcrumbs->addItem("admin.order.title.create");
-
         $order = new Order();
         $form = $this->createForm(OrderType::class, $order);
         $form->handleRequest($request);
@@ -117,16 +109,11 @@ class OrderController extends Controller
      */
     public function edit(Request $request, Order $order, OrderService $orderService)
     {
-        $breadcrumbs = $this->get("white_october_breadcrumbs");
-        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_order_list"));
-        $breadcrumbs->addItem("admin.order.title.update");
-
         $originalItems = new ArrayCollection();
         /** @var Item $thematic */
         foreach ($order->getItems() as $item) {
             $originalItems->add($item);
         }
-
         $form = $this->createForm(OrderType::class, $order, [
             'create' => false
         ]);

@@ -18,14 +18,15 @@ class Item
 {
     public const TYPE_BARREL = 'barrel';
     public const TYPE_BOTTLE = 'bottle';
+    public const DEFAULT_QUANTITY = 24;
 
     public const STATE_UPDATED = 'updated';
     public const STATE_NO_CHANGE = 'no_change';
     public const STATE_ADDED = 'added';
 
     public const LIST_TYPE = [
-        self::TYPE_BARREL => 'admin.type.'.self::TYPE_BARREL,
-        self::TYPE_BOTTLE => 'admin.type.'.self::TYPE_BOTTLE
+        self::TYPE_BOTTLE => 'admin.type.' . self::TYPE_BOTTLE,
+        self::TYPE_BARREL => 'admin.type.' . self::TYPE_BARREL
     ];
     /**
      * @ORM\Column(type="integer")
@@ -63,13 +64,13 @@ class Item
      * @var int
      * @ORM\Column(type="integer")
      */
-    private $quantity = 24;
+    private $quantity = self::DEFAULT_QUANTITY;
 
     /**
      * @var int
      * @ORM\Column(type="integer")
      */
-    private $quantityUpdated = 24;
+    private $quantityUpdated = self::DEFAULT_QUANTITY;
 
 
     /**

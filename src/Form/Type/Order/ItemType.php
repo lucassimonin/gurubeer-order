@@ -16,6 +16,8 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 /**
  *  Form Type
@@ -30,11 +32,9 @@ class ItemType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $attrQuantity = in_array($options['state'], Order::STATE_NO_EDIT_QUANTITY) ? ['readonly' => true] : [];
-        $quantityAttribute = $options['state'] === Order::STATE_DRAFT ? 'quantity' : 'quantityUpdated';
         $builder->add('name', TextType::class, [
             'label' => false,
-            'attr' => $attrQuantity
+            'attr' => in_array($options['state'], Order::STATE_NO_EDIT_QUANTITY) ? ['readonly' => true] : []
         ]);
         $builder->add('type', ChoiceType::class, [
             'choices' => array_flip(Item::LIST_TYPE),
@@ -42,10 +42,23 @@ class ItemType extends AbstractType
             'multiple' => false,
             'label' => false,
         ]);
+        $builder->addEventListener(
+            FormEvents::PRE_SET_DATA,
+            array($this, 'onPreSetData')
+        );
+    }
 
-        $builder->add($quantityAttribute, IntegerType::class, [
+    public function onPreSetData(FormEvent $event)
+    {
+        $form = $event->getForm();
+        /** @var Item $item */
+        $item = $event->getData();
+        $state = $form->getConfig()->getOption('state');
+        $quantityAttribute = $state === Order::STATE_DRAFT ? 'quantity' : 'quantityUpdated';
+        $form->add($quantityAttribute, IntegerType::class, [
             'label' => false,
-            'attr' => $attrQuantity
+            'attr' => in_array($state, Order::STATE_NO_EDIT_QUANTITY) ? ['readonly' => true] : [],
+            'data' => $item === null ? Item::DEFAULT_QUANTITY : $item->getQuantityUpdated()
         ]);
     }
 

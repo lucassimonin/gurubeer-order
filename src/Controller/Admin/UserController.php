@@ -33,26 +33,15 @@ class UserController extends Controller
      */
     public function list(Request $request)
     {
-        // init search
         $data = $this->initSearch($request);
-
-        // Init form
         $form = $this->createForm(SearchUserType::class, $data);
-
-        // Breadcrumb
-        $breadcrumbs = $this->get("white_october_breadcrumbs");
-        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_order_list"));
-        $breadcrumbs->addItem('admin.users.list.title');
-
-
-        // Paginate transform
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
             $this->getDoctrine()->getRepository(User::class)->queryForSearch($data->getSearchData()),
             $request->query->get('page', 1),
             20
         );
-        // Render view
+
         return $this->render('admin/user/index.html.twig', array(
             'pagination' => $pagination,
             'form' => $form->createView()
@@ -66,10 +55,7 @@ class UserController extends Controller
      */
     protected function initSearch(Request $request)
     {
-        // Filters get
         $filters = $request->query->get('search', array());
-
-        // Init form
         $data = new SearchUser();
         $data->setId((isset($filters['id'])) ? $filters['id'] : '');
         $data->setEmail((isset($filters['email']))   ? $filters['email'] : '');
@@ -87,21 +73,10 @@ class UserController extends Controller
      */
     public function create(Request $request, UserService $userService)
     {
-        // Breadcrumb
-        $breadcrumbs = $this->get("white_october_breadcrumbs");
-
-        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_order_list"));
-        $breadcrumbs->addItem("admin.users.list.title", $this->get("router")->generate("admin_user_list"));
-        $breadcrumbs->addItem("admin.user.title.create");
-
-        // Init form
         $user = new User();
-
         $form = $this->createForm(UserType::class, $user, [
             'admin' => $this->isGranted(User::ROLE_SUPER_ADMIN)
         ]);
-
-        // Update method
         if ('POST' === $request->getMethod()) {
             $form->handleRequest($request);
             if ($form->isValid()) {
@@ -116,15 +91,12 @@ class UserController extends Controller
                     'id' => $user->getId()
                 )));
             }
-
-            // Launch the message flash
             $this->get('session')->getFlashBag()->set(
                 'error',
                 'admin.flash.errors'
             );
         }
 
-        // View
         return $this->render(
             'admin/user/create.html.twig',
             array(
@@ -143,23 +115,11 @@ class UserController extends Controller
      */
     public function edit(Request $request, User $user, UserService $userService)
     {
-        // Breadcrumb
-        $breadcrumbs = $this->get("white_october_breadcrumbs");
-        $breadcrumbs->addItem('admin.dashboard.label', $this->get("router")->generate("admin_order_list"));
-        $breadcrumbs->addItem("admin.users.list.title", $this->get("router")->generate("admin_user_list"));
-        $breadcrumbs->addItem("admin.user.title.edit");
-
-        // Init form
         $form = $this->createForm(UserType::class, $user, [
             'admin' => $this->isGranted(User::ROLE_SUPER_ADMIN)
         ]);
-
-        // Update method
         if ('POST' === $request->getMethod()) {
-
-            // Bind value with form
             $form->handleRequest($request);
-
             if ($form->isValid()) {
                 $user->addRole($user->getRole());
                 $userService->save($user);
@@ -170,15 +130,12 @@ class UserController extends Controller
 
                 return $this->redirect($request->headers->get('referer'));
             }
-
-            // Launch the message flash
             $this->get('session')->getFlashBag()->set(
                 'error',
                 'admin.flash.errors'
             );
         }
 
-        // View
         return $this->render(
             'admin/user/edit.html.twig',
             array(
@@ -198,8 +155,6 @@ class UserController extends Controller
     public function delete(Request $request, User $user, UserService $userService)
     {
         $userService->remove($user);
-
-        // Launch the message flash
         $this->get('session')->getFlashBag()->set(
             'notice',
             'L\'utilisateur "'.$user->getFirstName().' '.$user->getLastName().'" a bien été supprimé'
