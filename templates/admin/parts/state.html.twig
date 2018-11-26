@@ -5,6 +5,8 @@
     {% set state_color = 'primary' %}
 {% elseif state == 'return_ok' %}
     {% set state_color = 'warning' %}
+{% elseif state == 'draft' %}
+    {% set state_color = 'warning' %}
 {% elseif state == 'wait_customer' %}
     {% set state_color = 'info' %}
 {% elseif state == 'wait_palette' %}

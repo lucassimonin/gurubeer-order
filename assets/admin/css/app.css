@@ -182,7 +182,8 @@ a > img {
     background: #3d4a5d !important;
     border-color: #3d4a5d;
 }
-#actions .btn {
+
+#actions .btn, .btn-palette {
     margin-bottom: 5px;
 }
 

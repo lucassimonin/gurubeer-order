@@ -18,6 +18,7 @@ use App\Security\OrderVoter;
 use App\Services\Core\FileUploader;
 use App\Services\Order\OrderService;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\DependencyInjection\Tests\Compiler\I;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -80,9 +81,6 @@ class OrderController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $order->setCreator($this->getUser());
             $orderService->formatItems($order);
-            $this->get('workflow.order')
-                ->apply($order, Order::TRANSITION_WAIT_RETURN);
-            $this->getDoctrine()->getManager()->flush();
             $this->get('session')->getFlashBag()->set(
                 'notice',
                 'admin.flash.created'
@@ -182,14 +180,7 @@ class OrderController extends Controller
                 $manager->flush();
                 /** @var Item $item */
                 foreach ($order->getItems() as $item) {
-                    if ($item->getQuantityUpdated() !== $item->getQuantity()) {
-                        if ($item->getState() !== Item::STATE_ADDED) {
-                            $item->setState(Item::STATE_UPDATED);
-                        }
-                    } else {
-                        $item->setState(Item::STATE_NO_CHANGE);
-                    }
-                    $item->setQuantity($item->getQuantityUpdated());
+                    $this->checkStateUpdateQuantity($item);
                     $manager->persist($item);
                 }
                 $manager->flush();
@@ -231,5 +222,19 @@ class OrderController extends Controller
                 'form' => $form->createView(),
                 'order_id' => $order->getId()
             ]);
+    }
+
+    private function checkStateUpdateQuantity(Item &$item): Item
+    {
+        if ($item->getQuantityUpdated() !== $item->getQuantity()) {
+            if ($item->getState() !== Item::STATE_ADDED || 0 !== $item->getQuantity()) {
+                $item->setState(Item::STATE_UPDATED);
+            }
+        } else {
+            $item->setState(Item::STATE_NO_CHANGE);
+        }
+        $item->setQuantity($item->getQuantityUpdated());
+
+        return $item;
     }
 }
