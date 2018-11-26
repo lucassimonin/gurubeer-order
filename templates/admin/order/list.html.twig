@@ -48,19 +48,19 @@
 
                     {% for order in pagination %}
                         <tr>
-                            <td style="vertical-align:middle; color:gray;width:70px;">{{ order.created|date("d/m/Y H:i", "Europe/Paris") }}</td>
-                            <td style="vertical-align:middle;word-break: break-word;width: 120px;">{{ order.name }}</td>
+                            <td style="color:gray;width:70px;">{{ order.created|date("d/m/Y H:i", "Europe/Paris") }}</td>
+                            <td>{{ order.name }}</td>
                             {% if is_granted('ROLE_PREPARATOR') %}
                                 <td>
                                     <a href="mailto:{{ order.creator.email }}">{{ order.creator.firstName ~ ' ' ~ order.creator.lastName }}</a>
                                 </td>
                             {% endif %}
-                            <td style="vertical-align:middle;">{% include 'admin/parts/state.html.twig' with {'state': order.state, 'before': order.beforeState} %}</td>
-                            <td style="vertical-align:middle; color:gray;width:105px;">{{ order.updated|date("d/m/Y H:i", "Europe/Paris") }}</td>
+                            <td>{% include 'admin/parts/state.html.twig' with {'state': order.state, 'before': order.beforeState} %}</td>
+                            <td style="color:gray;width:105px;">{{ order.updated|date("d/m/Y H:i", "Europe/Paris") }}</td>
                             <td>
                                 {{ render(controller('App\\Controller\\Admin\\OrderController::pdfForm', { 'order': order  })) }}
                             </td>
-                            <td style="text-align:center;vertical-align:middle;" id="actions">
+                            <td style="text-align:center;" id="actions">
                                 {% if workflow_can(order, 'to_wait_client') or
                                     workflow_can(order, 'to_return_ok') or
                                     workflow_can(order, 'to_return_wait_return') or
