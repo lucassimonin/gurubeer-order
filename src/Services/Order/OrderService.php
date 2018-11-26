@@ -56,6 +56,7 @@ class OrderService
             }
             $item = new Item();
             $item->setName(trim($line));
+            $item->setQuantity(Item::DEFAULT_QUANTITY);
             $order->addItem($item);
         }
         $this->save($order);

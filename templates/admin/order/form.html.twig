@@ -10,9 +10,7 @@
     {{ form_start(form) }}
         <div class="row">
             <div class="col-md-12">
-                <div class="col-sm-12">
-                    {{ form_widget(form) }}
-                </div>
+                {{ form_widget(form) }}
                 {% if order is defined and order.state == 'wait_palette'%}
                     <a href="{{ path('admin_order_apply_transition', {'id': order.id, 'transition': 'to_ready'}) }}" class="btn btn-success btn-palette">{{ ('admin.order.transition.to_ready')|trans({}, 'app') }}</a>
                 {% else %}

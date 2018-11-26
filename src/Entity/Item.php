@@ -64,7 +64,7 @@ class Item
      * @var int
      * @ORM\Column(type="integer")
      */
-    private $quantity = self::DEFAULT_QUANTITY;
+    private $quantity = 0;
 
     /**
      * @var int

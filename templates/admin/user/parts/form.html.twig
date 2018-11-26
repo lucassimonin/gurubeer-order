@@ -1,19 +1,17 @@
-<div class="col-sm-12">
-    {{ form_row(form.firstName) }}
-    {{ form_row(form.lastName) }}
-    {{ form_row(form.email) }}
-    {{ form_row(form.username) }}
-    {% if edit is defined %}
-        <div class="row">
-            <div class="alert alert-warning">
-                {{ 'admin.flash.user.password'|trans({}, 'app') }}
-            </div>
+{{ form_row(form.firstName) }}
+{{ form_row(form.lastName) }}
+{{ form_row(form.email) }}
+{{ form_row(form.username) }}
+{% if edit is defined %}
+    <div class="row">
+        <div class="alert alert-warning">
+            {{ 'admin.flash.user.password'|trans({}, 'app') }}
         </div>
-    {% endif %}
-    {{ form_row(form.plainPassword.first) }}
-    {{ form_row(form.plainPassword.second) }}
-    {% if form.enabled is defined %}
-        {{ form_row(form.role) }}
-        {{ form_row(form.enabled) }}
-    {% endif %}
-</div>
+    </div>
+{% endif %}
+{{ form_row(form.plainPassword.first) }}
+{{ form_row(form.plainPassword.second) }}
+{% if form.enabled is defined %}
+    {{ form_row(form.role) }}
+    {{ form_row(form.enabled) }}
+{% endif %}
