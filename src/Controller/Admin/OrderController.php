@@ -196,7 +196,9 @@ class OrderController extends Controller
                 /** @var Item $item */
                 foreach ($order->getItems() as $item) {
                     if ($item->getQuantityUpdated() !== $item->getQuantity()) {
-                        $item->setState(Item::STATE_UPDATED);
+                        if ($item->getState() !== Item::STATE_ADDED) {
+                            $item->setState(Item::STATE_UPDATED);
+                        }
                     } else {
                         $item->setState(Item::STATE_NO_CHANGE);
                     }

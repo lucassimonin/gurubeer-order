@@ -21,6 +21,7 @@ class Item
 
     public const STATE_UPDATED = 'updated';
     public const STATE_NO_CHANGE = 'no_change';
+    public const STATE_ADDED = 'added';
 
     public const LIST_TYPE = [
         self::TYPE_BARREL => 'admin.type.'.self::TYPE_BARREL,
@@ -50,25 +51,25 @@ class Item
      * @var string
      * @ORM\Column(type="string")
      */
-    private $state = self::STATE_NO_CHANGE;
+    private $state = self::STATE_ADDED;
 
     /**
      * @var string
      * @ORM\Column(type="string")
      */
-    private $type = self::TYPE_BARREL;
+    private $type = self::TYPE_BOTTLE;
 
     /**
      * @var int
      * @ORM\Column(type="integer")
      */
-    private $quantity = 0;
+    private $quantity = 24;
 
     /**
      * @var int
      * @ORM\Column(type="integer")
      */
-    private $quantityUpdated = 0;
+    private $quantityUpdated = 24;
 
 
     /**
@@ -191,6 +192,8 @@ class Item
             $color = 'red';
         } elseif ($this->state === self::STATE_UPDATED) {
             $color = 'orange';
+        } elseif ($this->state === self::STATE_ADDED) {
+            $color = 'blue';
         }
         return  $color;
     }

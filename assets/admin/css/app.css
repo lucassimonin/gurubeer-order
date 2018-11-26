@@ -1,17 +1,17 @@
-.cansort a{
-    color: rgba(255,255,255,0.8);
-}
-
-.sorted a {
-    color:#333;
-}
-
 .orange {
     background: rgba(230, 126, 34,.5);
 }
 
 .red {
     background: rgba(231, 76, 60,.5);
+}
+
+.blue {
+    background: rgba(41, 128, 185,.5);
+}
+
+#order_media_pdf {
+    margin-bottom: 5px;
 }
 
 .click-check tbody tr {
@@ -33,21 +33,6 @@ a > img {
     outline: none;
 }
 
-
-.cansort a:hover{
-    color: rgba(255,255,255,1);
-    text-decoration: none;
-}
-
-.sorted a{
-    color: rgba(255,255,255,1);
-}
-
-.sorted a:hover{
-    color: rgba(255,255,255,1);
-    text-decoration: none;
-}
-
 .sorted .fa-sort-desc{
     position: relative;
     top: 3px;
@@ -56,9 +41,10 @@ a > img {
     position: relative;
     top: 9px;
 }
-.cansort .sortable{
-    color: #333;
-    font-weight: bold;
+
+.fa-sort {
+    position: relative;
+    top: 3px;
 }
 
 
@@ -189,11 +175,15 @@ a > img {
 .btn-save{
     background: #3d4a5d !important;
     border-color: #3d4a5d;
+    margin-bottom: 5px;
 }
 
 .btn-save:hover{
     background: #3d4a5d !important;
     border-color: #3d4a5d;
+}
+#actions .btn {
+    margin-bottom: 5px;
 }
 
 textarea.form-control{

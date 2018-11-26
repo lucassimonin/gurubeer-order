@@ -33,13 +33,13 @@
                 <table class="table no-margin-botton table-bordered table-hover table-striped">
                     <thead>
                     <tr>
-                        <th class="cansort {% if pagination.isSorted('o.created') %}sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'admin.common.created_at'|trans({}, 'app'), 'o.created') }} {% if pagination.isSorted('o.created') %} <i class="fa fa-sort-{{ pagination.getDirection() }} pull-right"></i>{% endif %}</th>
-                        <th class="cansort {% if pagination.isSorted('o.name') %}sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'admin.common.form.name'|trans({}, 'app'), 'o.name') }} {% if pagination.isSorted('o.name') %} <i class="fa fa-sort-{{ pagination.getDirection() }} pull-right"></i>{% endif %}</th>
+                        <th class="{% if pagination.isSorted('o.created') %}sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'admin.common.created_at'|trans({}, 'app'), 'o.created') }}  <i class="fa fa-sort{% if pagination.isSorted('o.created') %}-{{ pagination.getDirection() }}{% endif %} pull-right"></i></th>
+                        <th class="{% if pagination.isSorted('o.name') %}sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'admin.common.form.name'|trans({}, 'app'), 'o.name') }}  <i class="fa fa-sort{% if pagination.isSorted('o.name') %}-{{ pagination.getDirection() }}{% endif %} pull-right"></i></th>
                         {% if is_granted('ROLE_PREPARATOR') %}
                             <th>{{ 'admin.common.creator'|trans({}, 'app') }}</th>
                         {% endif %}
-                        <th>{{ 'admin.common.state'|trans({}, 'app') }}</th>
-                        <th class="cansort {% if pagination.isSorted('o.updated') %}sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'admin.common.updated_at'|trans({}, 'app'), 'o.updated') }} {% if pagination.isSorted('o.updated') %} <i class="fa fa-sort-{{ pagination.getDirection() }} pull-right"></i>{% endif %}</th>
+                        <th class="{% if pagination.isSorted('o.state') %}sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'admin.common.state'|trans({}, 'app'), 'o.state') }}  <i class="fa fa-sort{% if pagination.isSorted('o.state') %}-{{ pagination.getDirection() }}{% endif %} pull-right"></i></th>
+                        <th class="{% if pagination.isSorted('o.updated') %}sorted{% endif %}">{{ knp_pagination_sortable(pagination, 'admin.common.updated_at'|trans({}, 'app'), 'o.updated') }}  <i class="fa fa-sort{% if pagination.isSorted('o.updated') %}-{{ pagination.getDirection() }}{% endif %} pull-right"></i></th>
                         <th>{{ 'admin.common.pdf'|trans({}, 'app') }}</th>
                         <th>{{ 'admin.common.actions'|trans({}, 'app') }}</th>
                     </tr>
@@ -48,21 +48,19 @@
 
                     {% for order in pagination %}
                         <tr>
-                            <td style="vertical-align:middle; color:gray;">{{ order.created|date("d/m/Y h:i", "Europe/Paris") }}</td>
-                            <td style="vertical-align:middle;">{{ order.name }}</td>
+                            <td style="vertical-align:middle; color:gray;width:70px;">{{ order.created|date("d/m/Y h:i", "Europe/Paris") }}</td>
+                            <td style="vertical-align:middle;word-break: break-word;width: 120px;">{{ order.name }}</td>
                             {% if is_granted('ROLE_PREPARATOR') %}
                                 <td>
                                     <a href="mailto:{{ order.creator.email }}">{{ order.creator.firstName ~ ' ' ~ order.creator.lastName }}</a>
                                 </td>
                             {% endif %}
                             <td style="vertical-align:middle;">{% include 'admin/parts/state.html.twig' with {'state': order.state, 'before': order.beforeState} %}</td>
-                            <td style="vertical-align:middle; color:gray;">{{ order.updated|date("d/m/Y h:i", "Europe/Paris") }}</td>
+                            <td style="vertical-align:middle; color:gray;width:105px;">{{ order.updated|date("d/m/Y h:i", "Europe/Paris") }}</td>
                             <td>
-                                {% if workflow_can(order, 'to_finish') %}
-                                    {{ render(controller('App\\Controller\\Admin\\OrderController::pdfForm', { 'order': order  })) }}
-                                {% endif %}
+                                {{ render(controller('App\\Controller\\Admin\\OrderController::pdfForm', { 'order': order  })) }}
                             </td>
-                            <td style="text-align:center;vertical-align:middle;">
+                            <td style="text-align:center;vertical-align:middle;" id="actions">
                                 {% if workflow_can(order, 'to_wait_client') or
                                     workflow_can(order, 'to_return_ok') or
                                     workflow_can(order, 'to_return_wait_return') or
