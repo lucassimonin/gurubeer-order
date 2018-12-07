@@ -76,3 +76,12 @@ jQuery(document).ready(function() {
     initCollection();
 });
 
+$(document).on('click', '.px-nav-toggle', function() {
+    var parent = $(this).parent('#left-menu');
+    if(parent.hasClass('px-nav-expand')) {
+        parent.removeClass('px-nav-animate px-nav-expand');
+    } else {
+        parent.addClass('px-nav-animate px-nav-expand');
+    }
+});
+
