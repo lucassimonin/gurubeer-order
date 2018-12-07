@@ -77,7 +77,7 @@ jQuery(document).ready(function() {
 });
 
 $(document).on('click', '.px-nav-toggle', function() {
-    var parent = $(this).parent('#left-menu');
+    var parent = $(this).parent('#main-menu');
     if(parent.hasClass('px-nav-expand')) {
         parent.removeClass('px-nav-animate px-nav-expand');
     } else {
