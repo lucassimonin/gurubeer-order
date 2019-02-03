@@ -19,9 +19,6 @@ final class Version20190202145615 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('DROP TABLE ext_log_entries');
         $this->addSql('DROP TABLE ext_translations');
         $this->addSql('DROP INDEX UNIQ_8D93D649E7927C74');
@@ -55,9 +52,6 @@ final class Version20190202145615 extends AbstractMigration
 
     public function down(Schema $schema) : void
     {
-        // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('CREATE TABLE ext_log_entries (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "action" VARCHAR(8) NOT NULL COLLATE BINARY, logged_at DATETIME NOT NULL, object_id VARCHAR(64) DEFAULT NULL COLLATE BINARY, object_class VARCHAR(255) NOT NULL COLLATE BINARY, version INTEGER NOT NULL, username VARCHAR(255) DEFAULT NULL COLLATE BINARY, data CLOB DEFAULT \'NULL --(DC2Type:array)\' COLLATE BINARY --(DC2Type:array)
         )');
         $this->addSql('CREATE INDEX log_version_lookup_idx ON ext_log_entries (object_id, object_class, version)');

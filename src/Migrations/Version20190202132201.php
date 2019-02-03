@@ -19,9 +19,6 @@ final class Version20190202132201 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('CREATE TABLE gurubeer_order_version (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, order_id INTEGER DEFAULT NULL, creator_id INTEGER DEFAULT NULL, state VARCHAR(255) NOT NULL, created DATETIME NOT NULL, updated DATETIME NOT NULL)');
         $this->addSql('CREATE INDEX IDX_D69CA2E08D9F6D38 ON gurubeer_order_version (order_id)');
         $this->addSql('CREATE INDEX IDX_D69CA2E061220EA6 ON gurubeer_order_version (creator_id)');
@@ -57,9 +54,6 @@ final class Version20190202132201 extends AbstractMigration
 
     public function down(Schema $schema) : void
     {
-        // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('DROP TABLE gurubeer_order_version');
         $this->addSql('DROP INDEX log_class_lookup_idx');
         $this->addSql('DROP INDEX log_date_lookup_idx');

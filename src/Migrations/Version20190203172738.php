@@ -19,9 +19,6 @@ final class Version20190203172738 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('CREATE TEMPORARY TABLE __temp__gurubeer_order AS SELECT id, name, file_name, created, updated FROM gurubeer_order');
         $this->addSql('DROP TABLE gurubeer_order');
         $this->addSql('CREATE TABLE gurubeer_order (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, creator_id INTEGER DEFAULT NULL, name VARCHAR(255) NOT NULL COLLATE BINARY, file_name VARCHAR(255) DEFAULT NULL COLLATE BINARY, created DATETIME NOT NULL, updated DATETIME NOT NULL, CONSTRAINT FK_36BDD3BF61220EA6 FOREIGN KEY (creator_id) REFERENCES user (id) NOT DEFERRABLE INITIALLY IMMEDIATE)');
@@ -48,9 +45,6 @@ final class Version20190203172738 extends AbstractMigration
 
     public function down(Schema $schema) : void
     {
-        // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('DROP INDEX IDX_87D5A3E38D9F6D38');
         $this->addSql('CREATE TEMPORARY TABLE __temp__gurubeer_item AS SELECT id, order_id, name, state, type, quantity, quantity_updated FROM gurubeer_item');
         $this->addSql('DROP TABLE gurubeer_item');

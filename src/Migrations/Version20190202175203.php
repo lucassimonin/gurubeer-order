@@ -19,9 +19,6 @@ final class Version20190202175203 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('DROP INDEX IDX_87D5A3E38D9F6D38');
         $this->addSql('CREATE TEMPORARY TABLE __temp__gurubeer_item AS SELECT id, order_id, name, state, type, quantity, quantity_updated FROM gurubeer_item');
         $this->addSql('DROP TABLE gurubeer_item');
@@ -42,9 +39,6 @@ final class Version20190202175203 extends AbstractMigration
 
     public function down(Schema $schema) : void
     {
-        // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('DROP INDEX IDX_87D5A3E38D9F6D38');
         $this->addSql('CREATE TEMPORARY TABLE __temp__gurubeer_item AS SELECT id, order_id, name, state, type, quantity, quantity_updated FROM gurubeer_item');
         $this->addSql('DROP TABLE gurubeer_item');

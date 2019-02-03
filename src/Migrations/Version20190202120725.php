@@ -19,9 +19,6 @@ final class Version20190202120725 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('CREATE TABLE gurubeer_order (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, creator_id INTEGER DEFAULT NULL, name VARCHAR(255) NOT NULL, state VARCHAR(255) NOT NULL, before_state VARCHAR(255) NOT NULL, file_name VARCHAR(255) DEFAULT NULL, created DATETIME NOT NULL, updated DATETIME NOT NULL)');
         $this->addSql('CREATE INDEX IDX_36BDD3BF61220EA6 ON gurubeer_order (creator_id)');
         $this->addSql('CREATE TABLE user (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, first_name VARCHAR(255) DEFAULT NULL, last_name VARCHAR(255) DEFAULT NULL, username VARCHAR(25) NOT NULL, slug VARCHAR(255) NOT NULL, password VARCHAR(64) NOT NULL, email VARCHAR(60) NOT NULL, roles CLOB NOT NULL --(DC2Type:array)
@@ -44,9 +41,6 @@ final class Version20190202120725 extends AbstractMigration
 
     public function down(Schema $schema) : void
     {
-        // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('DROP TABLE gurubeer_order');
         $this->addSql('DROP TABLE user');
         $this->addSql('DROP TABLE gurubeer_item');

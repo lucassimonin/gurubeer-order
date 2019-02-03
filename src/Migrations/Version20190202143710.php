@@ -19,9 +19,6 @@ final class Version20190202143710 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('DROP INDEX IDX_36BDD3BF61220EA6');
         $this->addSql('CREATE TEMPORARY TABLE __temp__gurubeer_order AS SELECT id, name, file_name, created, updated FROM gurubeer_order');
         $this->addSql('DROP TABLE gurubeer_order');
@@ -62,9 +59,6 @@ final class Version20190202143710 extends AbstractMigration
 
     public function down(Schema $schema) : void
     {
-        // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'sqlite', 'Migration can only be executed safely on \'sqlite\'.');
-
         $this->addSql('DROP INDEX log_class_lookup_idx');
         $this->addSql('DROP INDEX log_date_lookup_idx');
         $this->addSql('DROP INDEX log_user_lookup_idx');
