@@ -4,6 +4,7 @@
     "require": {
         "php": "^7.2.8",
         "ext-iconv": "*",
+        "sensiolabs/security-checker": "^5.0",
         "cocur/slugify": "^3.1",
         "guzzlehttp/guzzle": "^6.3",
         "knplabs/doctrine-behaviors": "~1.1",
