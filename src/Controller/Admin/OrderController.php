@@ -8,55 +8,68 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Item;
 use App\Entity\Order;
-use App\Form\Model\SearchOrder;
+use App\Entity\OrderVersion;
+use App\Form\Type\Order\OrderVersionType;
+use App\Model\SearchOrder;
 use App\Form\Type\Order\OrderMediaType;
 use App\Form\Type\Order\OrderType;
 use App\Form\Type\Order\SearchOrderType;
 use App\Security\OrderVoter;
-use App\Services\Core\FileUploader;
-use App\Services\Order\OrderService;
-use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Component\DependencyInjection\Tests\Compiler\I;
+use App\Services\Order\ItemManagerInterface;
+use App\Services\Order\OrderManagerInterface;
+use App\Services\Order\OrderVersionManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
  * Class OrderController
  *
  * @package App\Controller\Admin
  */
-class OrderController extends Controller
+class OrderController extends AbstractController
 {
     /**
-     * @param Request $request
-     *
-     * @return SearchOrder
+     * @var OrderManagerInterface
      */
-    protected function initSearch(Request $request)
-    {
-        $filters = $request->query->get('search', array());
-        $data = new SearchOrder();
-        $data->setName((isset($filters['name']))   ? $filters['name'] : '');
+    private $orderManager;
+    /**
+     * @var ItemManagerInterface
+     */
+    private $itemManager;
+    /**
+     * @var OrderVersionManagerInterface
+     */
+    private $orderVersionManager;
 
-        return $data;
+    /**
+     * OrderController constructor.
+     * @param OrderManagerInterface $orderManager
+     * @param ItemManagerInterface $itemManager
+     * @param OrderVersionManagerInterface $orderVersionManager
+     */
+    public function __construct(OrderManagerInterface $orderManager, ItemManagerInterface $itemManager, OrderVersionManagerInterface $orderVersionManager)
+    {
+        $this->orderManager = $orderManager;
+        $this->itemManager = $itemManager;
+        $this->orderVersionManager = $orderVersionManager;
     }
+
 
     /**
      * @param Request     $request
      * @Route("/", name="admin_order_list")
      * @return Response
      */
-    public function list(Request $request)
+    public function list(Request $request): Response
     {
-        $data = $this->initSearch($request);
+        $data = new SearchOrder($request->query->all());
         $form = $this->createForm(SearchOrderType::class, $data);
         $paginator  = $this->get('knp_paginator');
         $pagination = $paginator->paginate(
-            $this->getDoctrine()->getRepository(Order::class)->queryForSearch($data->getSearchData(), $this->getUser()),
+            $this->getDoctrine()->getRepository(Order::class)->queryForSearch($data, $this->getUser()),
             $request->query->get('page', 1),
             20
         );
@@ -69,24 +82,22 @@ class OrderController extends Controller
 
     /**
      * @param Request     $request
-     * @param OrderService $orderService
      * @Route("/order/create", name="admin_order_create")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function create(Request $request, OrderService $orderService)
+    public function create(Request $request): Response
     {
         $order = new Order();
         $form = $this->createForm(OrderType::class, $order);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $order->setCreator($this->getUser());
-            $orderService->formatItems($order);
+            $orderVersion = $this->getOrderVersionManager()->createFirstOrderVersion($order, $this->getUser());
             $this->get('session')->getFlashBag()->set(
-                'notice',
+                'success',
                 'admin.flash.created'
             );
 
-            return $this->redirectToRoute('admin_order_edit', ['id' => $order->getId()]);
+            return $this->redirectToRoute('admin_order_edit', ['id' => $orderVersion->getId()]);
         }
 
         return $this->render(
@@ -100,32 +111,24 @@ class OrderController extends Controller
 
     /**
      * @param Request $request
-     * @param Order $order
-     * @param OrderService $orderService
-     * @Route("/order/edit/{id}", name="admin_order_edit")
+     * @param OrderVersion $orderVersion
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     * @Route("/order/edit/{id}", name="admin_order_edit")
      */
-    public function edit(Request $request, Order $order, OrderService $orderService)
+    public function edit(Request $request, OrderVersion $orderVersion): Response
     {
-        $originalItems = new ArrayCollection();
-        /** @var Item $thematic */
-        foreach ($order->getItems() as $item) {
-            $originalItems->add($item);
-        }
-        $form = $this->createForm(OrderType::class, $order, [
-            'create' => false
+        $this->getItemManager()->setOriginalItems($orderVersion);
+        $form = $this->createForm(OrderVersionType::class, $orderVersion, [
+            'before_state' => $this->getOrderVersionManager()->getBeforeState($orderVersion)
         ]);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            foreach ($originalItems as $item) {
-                if (false === $order->getItems()->contains($item)) {
-                    $order->removeItem($item);
-                    $orderService->remove($item);
-                }
-            }
-            $orderService->save($order);
+            $orderVersionNew = $this->getItemManager()->removeOldItems($this->getOrderVersionManager()->createOrderVersion($orderVersion, $this->getUser()));
+            $this->getItemManager()->addOriginalItems($orderVersion);
+            $this->getOrderVersionManager()->save($orderVersion);
+            $this->getOrderVersionManager()->save($orderVersionNew);
             $this->get('session')->getFlashBag()->set(
-                'notice',
+                'success',
                 'admin.flash.updated'
             );
 
@@ -137,26 +140,22 @@ class OrderController extends Controller
             array(
                 'form' => $form->createView(),
                 'type' => 'update',
-                'order' => $order
+                'order' => $orderVersion
             )
         );
     }
 
     /**
      * @param Order $order
-     * @param OrderService $orderService
-     * @Route("/order/delete/{id}", name="admin_order_delete")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @Route("/order/delete/{id}", name="admin_order_delete")
      */
-    public function delete(Order $order, OrderService $orderService, FileUploader $fileUploader)
+    public function delete(Order $order): Response
     {
         $this->denyAccessUnlessGranted(OrderVoter::ORDER_DELETE, $order);
-        if (null !== $order->getFileName()) {
-            unlink($fileUploader->getTargetDirectory().'/'.$order->getFileName());
-        }
-        $orderService->remove($order);
+        $this->getOrderManager()->remove($order);
         $this->get('session')->getFlashBag()->set(
-            'notice',
+            'warning',
             'admin.flash.removed'
         );
 
@@ -165,26 +164,14 @@ class OrderController extends Controller
 
     /**
      * @param $transition
-     * @param Order $order
-     * @Route("/order/{id}/apply-transition/{transition}", name="admin_order_apply_transition")
+     * @param OrderVersion $orderVersion
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @Route("/order/{id}/apply-transition/{transition}", name="admin_order_apply_transition")
      */
-    public function applyTransition($transition, Order $order)
+    public function applyTransition($transition, OrderVersion $orderVersion): Response
     {
-        $manager = $this->getDoctrine()->getManager();
-        $order->setBeforeState($order->getState());
         try {
-            if (in_array($transition, Order::TRANSITION_AVAILABLE)) {
-                $this->get('workflow.order')
-                    ->apply($order, $transition);
-                $manager->flush();
-                /** @var Item $item */
-                foreach ($order->getItems() as $item) {
-                    $this->checkStateUpdateQuantity($item);
-                    $manager->persist($item);
-                }
-                $manager->flush();
-            }
+            $this->getOrderVersionManager()->apply($transition, $orderVersion, $this->getUser());
         } catch (\Exception $e) {
             $this->get('session')->getFlashBag()->add('danger', $e->getMessage());
         }
@@ -194,18 +181,17 @@ class OrderController extends Controller
     /**
      * @param Request $request
      * @param Order $order
-     * @param OrderService $orderService
      * @Route("/order/pdf/{id}", name="admin_order_save_pdf")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function savePdf(Request $request, Order $order, OrderService $orderService)
+    public function savePdf(Request $request, Order $order): Response
     {
         $form = $this->createForm(OrderMediaType::class, $order);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-            $orderService->save($order);
+            $this->getOrderManager()->save($order);
             $this->get('session')->getFlashBag()->set(
-                'notice',
+                'success',
                 'admin.flash.updated'
             );
         }
@@ -213,28 +199,47 @@ class OrderController extends Controller
         return $this->redirectToRoute('admin_order_list');
     }
 
-    public function pdfForm(Order $order)
+    public function pdfForm(Order $order): Response
     {
         $form = $this->createForm(OrderMediaType::class, $order);
 
-        return $this->render('admin/order/form_media.html.twig',
+        return $this->render(
+            'admin/order/form_media.html.twig',
             [
                 'form' => $form->createView(),
                 'order_id' => $order->getId()
-            ]);
+            ]
+        );
     }
 
-    private function checkStateUpdateQuantity(Item &$item): Item
+    /**
+     * @return OrderManagerInterface
+     */
+    public function getOrderManager(): OrderManagerInterface
     {
-        if ($item->getQuantityUpdated() !== $item->getQuantity()) {
-            if ($item->getState() !== Item::STATE_ADDED || 0 !== $item->getQuantity()) {
-                $item->setState(Item::STATE_UPDATED);
-            }
-        } else {
-            $item->setState(Item::STATE_NO_CHANGE);
-        }
-        $item->setQuantity($item->getQuantityUpdated());
+        return $this->orderManager;
+    }
 
-        return $item;
+    /**
+     * @return ItemManagerInterface
+     */
+    public function getItemManager(): ItemManagerInterface
+    {
+        return $this->itemManager;
+    }
+
+    /**
+     * @return OrderVersionManagerInterface
+     */
+    public function getOrderVersionManager(): OrderVersionManagerInterface
+    {
+        return $this->orderVersionManager;
+    }
+
+    public static function getSubscribedServices()
+    {
+        return array_merge(parent::getSubscribedServices(), [
+            'knp_paginator' => '?knp_paginator',
+        ]);
     }
 }

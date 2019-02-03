@@ -8,14 +8,11 @@
 
 namespace App\Entity\Traits;
 
-use Gedmo\Mapping\Annotation as Gedmo;
-
 trait TimestampableTrait
 {
     /**
      * @var \DateTime $created
      *
-     * @Gedmo\Timestampable(on="create")
      * @ORM\Column(type="datetime")
      */
     private $created;
@@ -23,7 +20,6 @@ trait TimestampableTrait
     /**
      * @var \DateTime $updated
      *
-     * @Gedmo\Timestampable(on="update")
      * @ORM\Column(type="datetime")
      */
     private $updated;

@@ -20,7 +20,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/*'
-        exclude: '../src/{Entity,Migrations,Tests,Kernel.php,Query,Repository}'
+        exclude: '../src/{Entity,Event,Kernel.php,Migrations,Model,Query,Tests}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -34,13 +34,17 @@ services:
         - { name: doctrine.event_listener, event: preUpdate }
         - { name: doctrine.event_listener, event: postLoad }
 
+    App\EventListener\UpdateEntityListener:
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+
     App\Form\Extension\ChoiceExtension:
         tags:
         - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\ChoiceType }
 
-    authentication_handler:
-        class: App\Handler\AuthenticationHandler
-
-    App\Services\Core\FileUploader:
+    App\Utils\FileUploader:
         arguments:
             $targetDirectory: '%media_directory%'
+
+    App\DataFixtures\Faker\PasswordProvider:
+        tags: [ { name: nelmio_alice.faker.provider } ]

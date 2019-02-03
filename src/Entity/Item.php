@@ -42,9 +42,9 @@ class Item
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Order", inversedBy="items", fetch="EAGER")
+     * @ORM\ManyToOne(targetEntity="App\Entity\OrderVersion", inversedBy="items", fetch="EAGER")
      * @ORM\JoinColumn(nullable=true)
-     * @var Order|null
+     * @var OrderVersion|null
      */
     private $order;
 
@@ -71,6 +71,13 @@ class Item
      * @ORM\Column(type="integer")
      */
     private $quantityUpdated = self::DEFAULT_QUANTITY;
+
+    public function __clone()
+    {
+        if ($this->id) {
+            $this->setId(null);
+        }
+    }
 
 
     /**
@@ -106,17 +113,17 @@ class Item
     }
 
     /**
-     * @return Order|null
+     * @return OrderVersion|null
      */
-    public function getOrder(): ?Order
+    public function getOrder(): ?OrderVersion
     {
         return $this->order;
     }
 
     /**
-     * @param Order|null $order
+     * @param OrderVersion|null $order
      */
-    public function setOrder(?Order $order): void
+    public function setOrder(?OrderVersion $order): void
     {
         $this->order = $order;
     }

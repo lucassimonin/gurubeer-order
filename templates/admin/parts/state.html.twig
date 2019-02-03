@@ -1,5 +1,5 @@
 {% if state == 'wait_return' %}
-    {% if before == 'wait_customer' %}
+    {% if order_before_version is not null and order_before_version.state == 'wait_customer' %}
         {% set state = 'customer_return' %}
     {% endif %}
     {% set state_color = 'primary' %}

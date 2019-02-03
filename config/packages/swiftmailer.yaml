@@ -1,7 +1,0 @@
-parameters:
-    admin_mailer: 'momar.diop@gurubeer.fr'
-    from: 'no_reply@app.com'
-
-swiftmailer:
-    url: '%env(MAILER_URL)%'
-    spool: { type: 'memory' }

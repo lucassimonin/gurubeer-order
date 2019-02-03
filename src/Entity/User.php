@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Entity\Traits\TimestampableTrait;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -16,7 +15,6 @@ class User implements UserInterface, \Serializable
 {
     use TimestampableTrait;
     const PATTERN_EMAIL = '/^(?:(?=.*[a-z])(?:(?=.*[A-Z])(?=.*[\d\W])|(?=.*\W)(?=.*\d))|(?=.*\W)(?=.*[A-Z])(?=.*\d)).{8,}$/';
-    const ROLE_DEFAULT = 'ROLE_COMMERCIAL';
     const ROLE_SUPER_ADMIN = 'ROLE_SUPER_ADMIN';
     const ROLE_PREPARATOR = 'ROLE_PREPARATOR';
     const ROLE_COMMERCIAL = 'ROLE_COMMERCIAL';
@@ -29,7 +27,6 @@ class User implements UserInterface, \Serializable
     private $id;
 
     /**
-     * Firstname
      * @var string
      * @ORM\Column(name="first_name", length=255, nullable=true)
      * @Assert\NotBlank(message="admin.validation.mandatory.label")
@@ -38,7 +35,6 @@ class User implements UserInterface, \Serializable
     private $firstName;
 
     /**
-     * Lastname
      * @var string
      * @ORM\Column(name="last_name", length=255, nullable=true)
      * @Assert\NotBlank(message="admin.validation.mandatory.label")
@@ -52,14 +48,6 @@ class User implements UserInterface, \Serializable
      * @Assert\NotBlank(message="admin.validation.mandatory.label")
      */
     private $username;
-
-    /**
-     * Slug
-     *
-     * @Gedmo\Slug(fields={"username"})
-     * @ORM\Column(length=255, unique=true)
-     */
-    private $slug;
 
     /**
      * @var string
@@ -81,8 +69,6 @@ class User implements UserInterface, \Serializable
      */
     private $roles;
 
-    private $role;
-
     /**
      * @var boolean
      * @ORM\Column(name="enabled", type="boolean")
@@ -102,25 +88,15 @@ class User implements UserInterface, \Serializable
     private $plainPassword;
 
     /**
-     * @var string $createdBy
-     *
-     * @Gedmo\Blameable(on="create")
-     * @ORM\Column(type="string", nullable=true)
+     * User constructor.
+     * @param bool $enabled
+     * @throws \Exception
      */
-    private $createdBy;
-
-    /**
-     * @var string $updatedBy
-     *
-     * @Gedmo\Blameable(on="update")
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $updatedBy;
-
     public function __construct($enabled = false)
     {
         $this->enabled = $enabled;
-        $this->role = self::ROLE_DEFAULT;
+        $this->created = new \DateTime();
+        $this->roles = [self::ROLE_COMMERCIAL];
     }
 
     /**
@@ -138,7 +114,14 @@ class User implements UserInterface, \Serializable
      */
     public function addRole($role)
     {
-        $this->setRoles([$role]);
+        $role = strtoupper($role);
+        if ($role === static::ROLE_COMMERCIAL) {
+            return $this;
+        }
+
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
 
         return $this;
     }
@@ -263,54 +246,6 @@ class User implements UserInterface, \Serializable
     }
 
     /**
-     * @return mixed
-     */
-    public function getSlug()
-    {
-        return $this->slug;
-    }
-
-    /**
-     * @param mixed $slug
-     */
-    public function setSlug($slug): void
-    {
-        $this->slug = $slug;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCreatedBy(): string
-    {
-        return $this->createdBy;
-    }
-
-    /**
-     * @param string $createdBy
-     */
-    public function setCreatedBy(string $createdBy): void
-    {
-        $this->createdBy = $createdBy;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUpdatedBy(): string
-    {
-        return $this->updatedBy;
-    }
-
-    /**
-     * @param string $updatedBy
-     */
-    public function setUpdatedBy(string $updatedBy): void
-    {
-        $this->updatedBy = $updatedBy;
-    }
-
-    /**
      * @return bool
      */
     public function isEnabled(): bool
@@ -332,26 +267,6 @@ class User implements UserInterface, \Serializable
     public function hasRole($role)
     {
         return in_array(strtoupper($role), $this->getRoles(), true);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRole()
-    {
-        if (null !== $this->role) {
-            return $this->role;
-        }
-
-        return isset($this->roles[0]) ? $this->roles[0] : self::ROLE_DEFAULT;
-    }
-
-    /**
-     * @param mixed $role
-     */
-    public function setRole($role): void
-    {
-        $this->role = $role;
     }
 
     /**
@@ -393,6 +308,11 @@ class User implements UserInterface, \Serializable
 
     public function eraseCredentials()
     {
+    }
+
+    public function getFullName()
+    {
+        return sprintf('%s %s', $this->firstName, $this->lastName);
     }
 
     /** @see \Serializable::serialize() */

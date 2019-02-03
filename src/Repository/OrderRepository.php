@@ -2,23 +2,31 @@
 
 namespace App\Repository;
 
+use App\Entity\Order;
 use App\Entity\User;
-use Doctrine\ORM\EntityRepository;
+use App\Model\SearchInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
- * Class ContentRepository
+ * Class OrderRepository
  *
  * @package App\Repository
  */
-class OrderRepository extends EntityRepository
+class OrderRepository extends ServiceEntityRepository
 {
+    public function __construct(RegistryInterface $registry)
+    {
+        parent::__construct($registry, Order::class);
+    }
     /**
-     * @param $filters
+     * @param SearchInterface $search
      * @param User $user
      * @return \Doctrine\ORM\Query
      */
-    public function queryForSearch($filters, User $user)
+    public function queryForSearch(SearchInterface $search, User $user)
     {
+        $filters = $search->getFilters();
         $qb = $this->createQueryBuilder('o')
            ->orderBy('o.updated', 'DESC');
         if (count($filters) > 0) {

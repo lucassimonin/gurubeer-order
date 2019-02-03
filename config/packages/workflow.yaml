@@ -7,7 +7,7 @@ framework:
                 arguments:
                 - 'state'
             supports:
-            - App\Entity\Order
+            - App\Entity\OrderVersion
             places:
             - draft
             - wait_return
@@ -18,38 +18,38 @@ framework:
             - finish
             transitions:
                 to_wait_return:
-                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    guard: "is_fully_authenticated() and is_granted('ROLE_ADMIN')"
                     from: draft
                     to:   wait_return
                 to_wait_customer:
-                    guard: "is_fully_authenticated() and has_role('ROLE_PREPARATOR')"
+                    guard: "is_fully_authenticated() and is_granted('ROLE_PREPARATOR')"
                     from: wait_return
                     to:   wait_customer
                 to_return_ok:
-                    guard: "is_fully_authenticated() and has_role('ROLE_PREPARATOR')"
+                    guard: "is_fully_authenticated() and is_granted('ROLE_PREPARATOR')"
                     from: wait_return
                     to:   return_ok
                 to_return_wait_return:
-                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    guard: "is_fully_authenticated() and is_granted('ROLE_ADMIN')"
                     from: return_ok
                     to: wait_return
                 to_return_ok_wait_customer:
-                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    guard: "is_fully_authenticated() and is_granted('ROLE_ADMIN')"
                     from: return_ok
                     to:   wait_customer
                 to_wait_customer_wait_return:
-                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    guard: "is_fully_authenticated() and is_granted('ROLE_ADMIN')"
                     from: wait_customer
                     to: wait_return
                 to_wait_palette:
-                    guard: "is_fully_authenticated() and has_role('ROLE_ADMIN')"
+                    guard: "is_fully_authenticated() and is_granted('ROLE_ADMIN')"
                     from: wait_customer
                     to:   wait_palette
                 to_ready:
-                    guard: "is_fully_authenticated() and has_role('ROLE_PREPARATOR')"
+                    guard: "is_fully_authenticated() and is_granted('ROLE_PREPARATOR')"
                     from: wait_palette
                     to:   ready
                 to_finish:
-                    guard: "is_fully_authenticated() and has_role('ROLE_PREPARATOR')"
+                    guard: "is_fully_authenticated() and is_granted('ROLE_PREPARATOR')"
                     from: ready
                     to:   finish

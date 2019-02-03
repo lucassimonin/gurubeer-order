@@ -9,7 +9,7 @@
 namespace App\Form\Type\Order;
 
 use App\Entity\Item;
-use App\Entity\Order;
+use App\Entity\OrderVersion;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -34,7 +34,7 @@ class ItemType extends AbstractType
     {
         $builder->add('name', TextType::class, [
             'label' => false,
-            'attr' => in_array($options['state'], Order::STATE_NO_EDIT_QUANTITY) ? ['readonly' => true] : []
+            'attr' => in_array($options['state'], OrderVersion::STATE_NO_EDIT_QUANTITY) ? ['readonly' => true] : []
         ]);
         $builder->add('type', ChoiceType::class, [
             'choices' => array_flip(Item::LIST_TYPE),
@@ -54,10 +54,10 @@ class ItemType extends AbstractType
         /** @var Item $item */
         $item = $event->getData();
         $state = $form->getConfig()->getOption('state');
-        $quantityAttribute = $state === Order::STATE_DRAFT ? 'quantity' : 'quantityUpdated';
+        $quantityAttribute = $state === OrderVersion::STATE_DRAFT ? 'quantity' : 'quantityUpdated';
         $form->add($quantityAttribute, IntegerType::class, [
             'label' => false,
-            'attr' => in_array($state, Order::STATE_NO_EDIT_QUANTITY) ? ['readonly' => true] : [],
+            'attr' => in_array($state, OrderVersion::STATE_NO_EDIT_QUANTITY) ? ['readonly' => true] : [],
             'data' => $item === null ? Item::DEFAULT_QUANTITY : $item->getQuantityUpdated()
         ]);
     }
@@ -72,7 +72,7 @@ class ItemType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => Item::class,
             'translation_domain' => 'app',
-            'state' => Order::STATE_DRAFT
+            'state' => OrderVersion::STATE_DRAFT
         ));
     }
 }

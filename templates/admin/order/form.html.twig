@@ -2,15 +2,39 @@
 
 {% block title %}{{ ('admin.order.title.' ~ type)|trans({}, 'app') }}{% endblock %}
 {% block mainTitle %}
-    <h1>{{ ('admin.order.title.' ~ type)|trans({}, 'app') }}</h1>
-{% endblock %}
-{% block menu %}
+    {{ ('admin.order.title.' ~ type)|trans({}, 'app') }}
 {% endblock %}
 {% block content %}
     {{ form_start(form) }}
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-12  col-sm-12">
                 {{ form_widget(form) }}
+                {% if type != 'create' %}
+                    {% set order_before_version = form.vars.data|before_version() %}
+                    {% if order_before_version is not null and order_before_version.state != 'draft' %}
+                        <fieldset class="form-group">
+                            <legend class="col-form-label required">Version avant de {{ order_before_version.creator.getFullName() }}</legend>
+                                <table class="table table-bordered" id="{{ form.vars.id }}">
+                                    <thead>
+                                    <tr class="title">
+                                        <th>{{ 'admin.item.form.name'|trans({}, 'app') }}</th>
+                                        <th>{{ 'admin.component.order.label.type'|trans({}, 'app') }}</th>
+                                        <th>{{ 'admin.item.form.quantity'|trans({}, 'app') }}</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for item in order_before_version.items %}
+                                        <tr>
+                                            <td>{{ item.name }}</td>
+                                            <td>{{ item.type }}</td>
+                                            <td>{{ item.quantity }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                        </fieldset>
+                    {% endif %}
+                {% endif %}
                 {% if order is defined and order.state == 'wait_palette'%}
                     <a href="{{ path('admin_order_apply_transition', {'id': order.id, 'transition': 'to_ready'}) }}" class="btn btn-success btn-palette">{{ ('admin.order.transition.to_ready')|trans({}, 'app') }}</a>
                 {% else %}

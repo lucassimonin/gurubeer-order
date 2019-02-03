@@ -8,7 +8,10 @@
 
 namespace App\Repository;
 
-use Doctrine\ORM\EntityRepository;
+use App\Entity\User;
+use App\Model\SearchInterface;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 
 /**
@@ -16,27 +19,32 @@ use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
  *
  * @package App\Repository
  */
-class UserRepository extends EntityRepository implements UserLoaderInterface
+class UserRepository extends ServiceEntityRepository implements UserLoaderInterface
 {
+    public function __construct(RegistryInterface $registry)
+    {
+        parent::__construct($registry, User::class);
+    }
 
     /**
      * Get all user query, using for pagination
      *
-     * @param array $filters
-     *
+     * @param SearchInterface $search
      * @return mixed
      */
-    public function queryForSearch($filters = array())
+    public function queryForSearch(SearchInterface $search)
     {
+        $filters = $search->getFilters();
         $qb = $this->createQueryBuilder('u')
             ->select('u')
             ->orderBy('u.lastName', 'asc');
 
-        if (count($filters) > 0) {
-            foreach ($filters as $key => $filter) {
-                $qb->andWhere('u.'.$key.' LIKE :'.$key);
-                $qb->setParameter($key, '%'.$filter.'%');
+        foreach ($filters as $key => $filter) {
+            if (null === $filter) {
+                continue;
             }
+            $qb->andWhere('u.'.$key.' LIKE :'.$key);
+            $qb->setParameter($key, '%'.$filter.'%');
         }
 
         return $qb->getQuery();

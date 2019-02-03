@@ -8,48 +8,32 @@
     <link rel="icon" type="image/png" href="{{ asset('images/admin/favicon.ico') }}"  />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     {% block stylesheets %}
-        <link href="{{ asset('build/admin/css/style.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('build/admin.css') }}" rel="stylesheet" type="text/css">
     {% endblock %}
 </head>
 <body id="{% block bodyId %}{% endblock %}">
     {% trans_default_domain 'app' %}
-    {% block menu %}
-        {% if is_granted('user-view', app.user) %}
-            {% include "admin/parts/menu.html.twig" %}
-        {% endif %}
-    {% endblock %}
     {% block headbar %}
         {% include "admin/parts/headbar.html.twig" %}
     {% endblock %}
-    <div class="px-content">
-        <div class="" id="flash-messages"></div>
-        {% for flashMessage in app.session.flashbag.get('notice') %}
-            <div class="alert alert-success alert-layout alert-dark" ><i class="fa fa-check"></i>&nbsp; {{ flashMessage|trans({}, 'app')|raw }}<button type="button" class="close" data-dismiss="alert">×</button></div>
-        {% endfor %}
-        {% for flashMessage in app.session.flashbag.get('warning') %}
-            <div class="alert alert-warning alert-layout alert-dark" ><i class="fa fa-exclamation-triangle"></i>&nbsp; {{ flashMessage|trans({}, 'app')|raw }}<button type="button" class="close" data-dismiss="alert">×</button></div>
-        {% endfor %}
-        {% for flashMessage in app.session.flashbag.get('error') %}
-            <div class="alert alert-danger alert-layout alert-dark" ><i class="fa fa-check"></i>&nbsp; {{ flashMessage|trans({}, 'app')|raw }}<button type="button" class="close" data-dismiss="alert">×</button></div>
-        {% endfor %}
-        <div class="page-header {% block classPageHeader %}{% endblock %}">
-            {% block mainTitle %}{% endblock %}
-            <div style="display: inline-block; float: right;">
+    <div class="container-fluid">
+        <main role="main" class="ml-sm-auto pt-3">
+            {% block breadcrumb %}{{ wo_render_breadcrumbs({ viewTemplate: "admin/parts/breadcrumbs.html.twig" }) }}{% endblock %}
+            {% include 'admin/parts/flashes.html.twig' %}
+
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 border-bottom">
+                <h1 class="h2">{% block mainTitle %}{% endblock %}</h1>
                 {% block options %}{% endblock %}
             </div>
-        </div>
-        {% block content %}{% endblock %}
+            {% block content %}{% endblock %}
+        </main>
     </div>
     {% block javascripts %}
-        <script
-                src="https://code.jquery.com/jquery-1.12.4.min.js"
-                integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-                crossorigin="anonymous"></script>
         <script>
             var add_label = "{{ 'admin.common.add'|trans({}, 'app') }}";
             var delete_label = "{{ 'admin.common.delete'|trans({}, 'app') }}";
         </script>
-        <script src="{{ asset('build/admin/js/app.js') }}"></script>
+        <script src="{{ asset('build/admin.js') }}"></script>
     {% endblock %}
 </body>
 </html>

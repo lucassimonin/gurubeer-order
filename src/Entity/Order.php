@@ -22,30 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Order
 {
     use TimestampableTrait;
-    public const STATE_DRAFT = 'draft';
-    public const STATE_WAIT_RETURN = 'wait_return';
-    public const STATE_RETURN_OK = 'return_ok';
-    public const STATE_WAIT_CUSTOMER = 'wait_customer';
-    public const STATE_READY = 'ready';
-    public const STATE_FINISH = 'finish';
-    public const STATE_NO_EDIT_QUANTITY = [
-        'ready',
-        'finish',
-        'wait_palette'
-    ];
-    public const TRANSITION_WAIT_RETURN = 'to_wait_return';
-    public const TRANSITION_CUSTOMER_RETURN = 'to_wait_customer_wait_return';
-    public const TRANSITION_AVAILABLE = [
-        'to_wait_return',
-        'to_wait_customer',
-        'to_return_ok',
-        'to_return_wait_return',
-        'to_return_ok_wait_customer',
-        'to_ready',
-        'to_finish',
-        'to_wait_palette',
-        'to_wait_customer_wait_return'
-    ];
+
     /**
      * @ORM\Column(type="integer")
      * @ORM\Id
@@ -60,31 +37,10 @@ class Order
     private $name;
 
     /**
-     * @var string
-     * @ORM\Column(type="string")
-     */
-    private $state = self::STATE_DRAFT;
-
-    /**
-     * @var string
-     * @ORM\Column(type="string")
-     */
-    private $beforeState = self::STATE_DRAFT;
-
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Item", mappedBy="order", cascade={"persist", "remove"})
+     * @ORM\OneToMany(targetEntity="App\Entity\OrderVersion", mappedBy="order", cascade={"persist", "remove"})
      * @var ArrayCollection
      */
-    private $items;
-
-    /**
-     * Creator
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(name="creator_id", referencedColumnName="id")
-     * @var User|null
-     */
-    protected $creator;
+    private $versions;
 
     /**
      * @var string|null
@@ -105,11 +61,22 @@ class Order
     private $fileName;
 
     /**
+     * Creator
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\User")
+     * @ORM\JoinColumn(name="creator_id", referencedColumnName="id")
+     * @var User|null
+     */
+    private $creator;
+
+    /**
      * Order constructor.
+     * @throws \Exception
      */
     public function __construct()
     {
-        $this->items = new ArrayCollection();
+        $this->versions = new ArrayCollection();
+        $this->created = new \DateTime();
     }
 
     /**
@@ -144,87 +111,57 @@ class Order
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function getState(): string
-    {
-        return $this->state;
-    }
-
-    /**
-     * @param string $state
-     */
-    public function setState(string $state): void
-    {
-        $this->state = $state;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBeforeState(): string
-    {
-        return $this->beforeState;
-    }
-
-    /**
-     * @param string $beforeState
-     */
-    public function setBeforeState(string $beforeState): void
-    {
-        $this->beforeState = $beforeState;
-    }
+    
 
     /**
      * @return ArrayCollection
      */
-    public function getItems()
+    public function getVersions()
     {
-        return $this->items;
+        return $this->versions;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function clearItems(): void
+    public function clearVersions(): void
     {
-        $this->items->clear();
+        $this->versions->clear();
     }
     /**
      * {@inheritdoc}
      */
-    public function countItems(): int
+    public function countVersions(): int
     {
-        return $this->items->count();
+        return $this->versions->count();
     }
     /**
      * {@inheritdoc}
      */
-    public function addItem(Item $item): void
+    public function addVersion(OrderVersion $version): void
     {
-        if ($this->hasItem($item)) {
+        if ($this->hasVersion($version)) {
             return;
         }
-        $this->items->add($item);
-        $item->setOrder($this);
+        $this->versions->add($version);
+        $version->setOrder($this);
     }
     /**
      * {@inheritdoc}
      */
-    public function removeItem(Item $item): void
+    public function removeVersion(OrderVersion $version): void
     {
-        if ($this->hasItem($item)) {
-            $this->items->removeElement($item);
-            $item->setOrder(null);
+        if ($this->hasVersion($version)) {
+            $this->versions->removeElement($version);
+            $version->setOrder(null);
         }
     }
     /**
      * {@inheritdoc}
      */
-    public function hasItem(Item $item): bool
+    public function hasVersion(OrderVersion $version): bool
     {
-        return $this->items->contains($item);
+        return $this->versions->contains($version);
     }
 
     /**
@@ -232,23 +169,7 @@ class Order
      */
     public function isEmpty(): bool
     {
-        return $this->items->isEmpty();
-    }
-
-    /**
-     * @return User|null
-     */
-    public function getCreator(): ?User
-    {
-        return $this->creator;
-    }
-
-    /**
-     * @param User|null $creator
-     */
-    public function setCreator(?User $creator): void
-    {
-        $this->creator = $creator;
+        return $this->versions->isEmpty();
     }
 
     /**
@@ -278,7 +199,7 @@ class Order
     /**
      * @param $pdf
      */
-    public function setPdf( $pdf): void
+    public function setPdf($pdf): void
     {
         $this->pdf = $pdf;
     }
@@ -297,5 +218,21 @@ class Order
     public function setFileName(string $fileName): void
     {
         $this->fileName = $fileName;
+    }
+
+    /**
+     * @return User|null
+     */
+    public function getCreator(): ?User
+    {
+        return $this->creator;
+    }
+
+    /**
+     * @param User|null $creator
+     */
+    public function setCreator(?User $creator): void
+    {
+        $this->creator = $creator;
     }
 }

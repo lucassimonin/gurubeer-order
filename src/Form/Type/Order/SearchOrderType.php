@@ -8,7 +8,7 @@
 
 namespace App\Form\Type\Order;
 
-use App\Form\Model\SearchOrder;
+use App\Model\SearchOrder;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -29,7 +29,10 @@ class SearchOrderType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name', TextType::class, ['required' => false]);
+        $builder->add('name', TextType::class, [
+            'required' => false,
+            'label' => 'admin.common.form.name'
+        ]);
     }
 
     /**
@@ -41,7 +44,13 @@ class SearchOrderType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => SearchOrder::class,
-            'translation_domain' => 'app'
+            'translation_domain' => 'app',
+            'csrf_protection' => false
         ));
+    }
+
+    public function getBlockPrefix()
+    {
+        return '';
     }
 }

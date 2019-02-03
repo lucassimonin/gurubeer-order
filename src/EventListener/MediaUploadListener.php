@@ -13,13 +13,13 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
-use App\Services\Core\FileUploader;
+use App\Utils\FileUploaderInterface;
 
 class MediaUploadListener
 {
     private $uploader;
 
-    public function __construct(FileUploader $uploader)
+    public function __construct(FileUploaderInterface $uploader)
     {
         $this->uploader = $uploader;
     }

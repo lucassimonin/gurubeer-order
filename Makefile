@@ -1,55 +1,26 @@
-DOCKER_COMPOSE  = docker-compose
-
-EXEC_PHP        = $(DOCKER_COMPOSE) exec -T php /entrypoint
-EXEC_JS         = $(DOCKER_COMPOSE) exec -T node /entrypoint
+EXEC_PHP        = php
 
 SYMFONY         = $(EXEC_PHP) bin/console
 COMPOSER        = $(EXEC_PHP) composer
-YARN            = $(EXEC_JS) yarn
-
-##
-## Project
-## -------
-##
-build:
-	$(DOCKER_COMPOSE) build --pull
-
-build-nocache:
-	$(DOCKER_COMPOSE) build --pull --no-cache
-
-start: ## Start the project
-start:
-	$(DOCKER_COMPOSE) up -d --remove-orphans --no-recreate
-
-stop: ## Stop the project
-	$(DOCKER_COMPOSE) stop
-
-kill:
-	$(DOCKER_COMPOSE) kill
-	$(DOCKER_COMPOSE) down --volumes --remove-orphans
+YARN            = yarn
 
 clean: ## Stop the project and remove generated files
-clean: kill
+clean:
 	rm -rf .env vendor node_modules var/cache/* var/log/* public/build/*
 
 reset: ## Stop and start a fresh install of the project
-reset: kill install
+reset: install
+
+composer:
+	$(EXEC_PHP) composer install
 
 install: ## Install and start the project
-install: .env build start db assets
+install: .env composer db assets
 
-install-nocache: ## Install with no cache on docker and start the project
-install-nocache: .env build-nocache start db assets
-
-deploy: .env vendor assets-prod db-update sync-translation update-js-route
+deploy: .env vendor assets-prod db-update sync-translation
 	rm -rf var/cache/*
 
-no-docker:
-	$(eval DOCKER_COMPOSE := \#)
-	$(eval EXEC_PHP := )
-	$(eval EXEC_JS := )
-
-.PHONY: build kill install reset start stop clean no-docker deploy
+.PHONY: build kill install reset start stop clean deploy composer
 ##
 ## Utils
 ## -----
@@ -57,32 +28,31 @@ no-docker:
 
 db: ## Reset the database and load fixtures
 db: flush .env vendor
-	-$(SYMFONY) doctrine:database:drop --if-exists --force
-	-$(SYMFONY) doctrine:database:create --if-not-exists
-	$(SYMFONY) doctrine:schema:update --no-interaction --force
-	$(SYMFONY) doctrine:fixtures:load --no-interaction
+	$(SYMFONY) doctrine:database:drop --force
+	$(SYMFONY) doctrine:database:create
+	$(SYMFONY) doctrine:migrations:migrate --no-interaction --allow-no-migration
+	$(SYMFONY) hautelook:fixtures:load --no-interaction
 
 db-update: ## Update database
 db-update: flush .env vendor
-	$(SYMFONY) doctrine:schema:update --no-interaction --force
+	$(SYMFONY) doctrine:cache:clear-metadata
+	$(SYMFONY) doctrine:migrations:diff --no-interaction
+	$(SYMFONY) doctrine:migrations:migrate --no-interaction --allow-no-migration
+
 
 db-validate-schema: ## Validate the doctrine ORM mapping
 db-validate-schema: .env vendor
 	$(SYMFONY) doctrine:schema:validate
 
-update-js-route: ## Update js route
-update-js-route: .env vendor
-	$(SYMFONY) fos:js-routing:dump --format=json --target=public/build/admin/js/fos_js_routes.json
-
 assets: ## Run Yarn to compile assets
 assets: node_modules
 	rm -rf public/build/*
-	$(YARN) run build
+	$(YARN) run dev
 
 assets-prod: ## Run Yarn to compile and minified assets
-assets-prod: node_modules
+build-assets: node_modules
 	rm -rf public/build/*
-	$(YARN) run build-prod
+	$(YARN) run build
 
 watch: ## Run Yarn in watch mode
 watch: node_modules
@@ -106,7 +76,7 @@ console: ## Console symfony
 console: .env vendor
 	$(SYMFONY) $(filter-out $@,$(MAKECMDGOALS))
 
-.PHONY: db assets watch clear flush console assets-prod update-js-route sync-translation
+.PHONY: db assets watch clear flush console assets-prod sync-translation
 
 ##
 ## Tests
@@ -118,11 +88,11 @@ test: tu tf
 
 tu: ## Run unit tests
 tu: vendor
-	$(EXEC_PHP) ./vendor/bin/phpunit tests --exclude-group functional
+	$(EXEC_PHP) bin/phpunit tests --color --exclude-group functional
 
 tf: ## Run functional tests
 tf: vendor
-	$(EXEC_PHP) ./vendor/bin/phpunit tests --group functional
+	$(EXEC_PHP) bin/phpunit tests --color --group functional
 
 .PHONY: tests tu tf
 
@@ -204,10 +174,10 @@ phpmetrics: artefacts
 	$(QA) phpmetrics --report-html=$(ARTEFACTS)/phpmetrics src
 
 php-cs-fixer: ## php-cs-fixer (http://cs.sensiolabs.org)
-	bin/php-cs-fixer fix src --dry-run --using-cache=no --verbose --diff
+	$(QA) php-cs-fixer fix src --dry-run --using-cache=no --verbose --diff
 
 apply-php-cs-fixer: ## apply php-cs-fixer fixes
-	bin/php-cs-fixer fix src --using-cache=no --verbose --diff
+	$(QA) php-cs-fixer fix src --using-cache=no --verbose --diff
 
 twigcs: ## twigcs (https://github.com/allocine/twigcs)
 	$(QA) twigcs lint templates

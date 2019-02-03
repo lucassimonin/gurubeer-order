@@ -1,0 +1,25 @@
+App\Entity\User:
+  admin:
+    password: <password(@admin, "12345")>
+    roles: ["ROLE_SUPER_ADMIN"]
+    firstName: "<fr_FR:firstName()>"
+    lastName: "<fr_FR:lastName()>"
+    enabled: "true"
+    email: "admin@admin.com"
+    username: "admin"
+  preparator:
+    password: <password(@preparator, "12345")>
+    roles: ["ROLE_PREPARATOR"]
+    firstName: "<fr_FR:firstName()>"
+    lastName: "<fr_FR:lastName()>"
+    enabled: "true"
+    email: "preparator@preparator.com"
+    username: "preparator"
+  commercial:
+    password: <password(@commercial, "12345")>
+    roles: ["ROLE_COMMERCIAL"]
+    firstName: "<fr_FR:firstName()>"
+    lastName: "<fr_FR:lastName()>"
+    enabled: "true"
+    email: "commercial@commercial.com"
+    username: "commercial"

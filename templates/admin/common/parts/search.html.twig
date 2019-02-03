@@ -1,0 +1,16 @@
+<div class="col-md-12 m-b-2 col-sm-12 search-zone"  {% if app.request.query.all is empty %}style="display: none;"{% endif %}>
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="panel panel-inverse search-block">
+                <div class="panel-body">
+                    {{ form_start(form, {'method': 'get'}) }}
+                    {{ form_widget(form) }}
+                    <div class="col-sm-12" style="text-align: center;">
+                        <input class="btn btn-outline-secondary" type="submit" value="{{ 'admin.common.search.button'|trans({}, 'app') }}">
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

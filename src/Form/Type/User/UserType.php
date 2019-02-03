@@ -37,28 +37,29 @@ class UserType extends AbstractType
             'required' => true
         ]);
         if ($options['admin']) {
-            $builder->add('role', ChoiceType::class, [
+            $builder->add('roles', ChoiceType::class, [
                 'choices' => [
-                    'roles.super_admin' => 'ROLE_SUPER_ADMIN',
-                    'roles.commercial' => 'ROLE_COMMERCIAL',
-                    'roles.preparator' => 'ROLE_PREPARATOR'
+                    'roles.super_admin' => User::ROLE_SUPER_ADMIN,
+                    'roles.commercial' => User::ROLE_COMMERCIAL,
+                    'roles.preparator' => User::ROLE_PREPARATOR
                 ],
                 'label' => 'admin.user.form.roles',
-                'multiple' => false
+                'multiple' => true,
+                'not_real_multiple' => true
             ]);
         }
         $builder->add('firstName', TextType::class, ['label' => 'admin.user.form.firstname']);
         $builder->add('lastName', TextType::class, ['label' => 'admin.user.form.lastname']);
         $builder->add('email', EmailType::class, ['label' => 'admin.user.form.email']);
-        $builder->add('plainPassword', RepeatedType::class, array(
+        $builder->add('plainPassword', RepeatedType::class, [
             'type' => PasswordType::class,
             'label' => 'admin.user.form.password',
-            'options' => array('required' => false),
-            'first_options'   =>  array('label' => 'admin.user.form.password'),
-            'second_options'  =>  array('label' => 'admin.user.form.repeat_password'),
+            'options' => ['required' => false],
+            'first_options'   =>  ['label' => 'admin.user.form.password'],
+            'second_options'  =>  ['label' => 'admin.user.form.repeat_password'],
             'invalid_message' =>  'admin.user.form.password.error'
-        ));
-        $builder->add('enabled', CheckboxType::class, array('required' => false, 'label' => 'admin.common.activate'));
+        ]);
+        $builder->add('enabled', CheckboxType::class, ['required' => false, 'label' => 'admin.common.activate']);
     }
 
     /**
@@ -68,10 +69,10 @@ class UserType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver->setDefaults([
             'data_class' => User::class,
             'translation_domain' => 'app',
             'admin' => false
-        ));
+        ]);
     }
 }

@@ -17,6 +17,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
  */
 class CreateUserCommand extends Command
 {
+    protected static $defaultName = 'app:create-user';
 
     /** @var ManagerRegistry  */
     private $doctrine;
@@ -41,7 +42,6 @@ class CreateUserCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('app:create-user')
             ->setDescription('Creates a new user.')
             ->setHelp('This command allows you to create a user.')
             ->addOption('admin', null, InputOption::VALUE_NONE, 'create admin user.')
@@ -60,7 +60,7 @@ class CreateUserCommand extends Command
         $io->title('USER CREATOR');
         $admin = $input->getOption('admin');
         $userEntity = new User(true);
-        $userEntity->addRole($admin ? 'ROLE_SUPER_ADMIN' : 'ROLE_USER');
+        $userEntity->addRole($admin ? User::ROLE_SUPER_ADMIN : User::ROLE_COMMERCIAL);
         do {
             $username = $io->ask('Username', null, function ($username) {
                 if (empty($username)) {
