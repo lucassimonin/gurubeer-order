@@ -29,9 +29,6 @@ class SearchUserType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('id', TextType::class, ['required' => false]);
-        $builder->add('firstName', TextType::class, ['required' => false]);
-        $builder->add('lastName', TextType::class, ['required' => false]);
         $builder->add('email', TextType::class, ['required' => false]);
     }
 

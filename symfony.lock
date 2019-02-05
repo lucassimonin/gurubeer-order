@@ -8,6 +8,9 @@
     "cocur/slugify": {
         "version": "v3.1"
     },
+    "composer/ca-bundle": {
+        "version": "1.1.4"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -251,13 +254,13 @@
     "sebastian/recursion-context": {
         "version": "3.0.0"
     },
-    "sensio/framework-extra-bundle": {
+    "sensiolabs/security-checker": {
         "version": "4.0",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "master",
             "version": "4.0",
-            "ref": "aaddfdf43cdecd4cf91f992052d76c2cadc04543"
+            "ref": "05daf6b214e54aed4089f3480f944a67ac3a7889"
         }
     },
     "symfony/asset": {
