@@ -4,7 +4,6 @@
     "require": {
         "php": "^7.2.8",
         "ext-iconv": "*",
-        "sensiolabs/security-checker": "^5.0",
         "cocur/slugify": "^3.1",
         "guzzlehttp/guzzle": "^6.3",
         "knplabs/doctrine-behaviors": "~1.1",
@@ -12,6 +11,8 @@
         "php-http/guzzle6-adapter": "^1.1",
         "php-translation/loco-adapter": "^0.8.0",
         "php-translation/symfony-bundle": "^0.8.0",
+        "sensio/framework-extra-bundle": "^5.2",
+        "sensiolabs/security-checker": "^5.0",
         "symfony/asset": "^4.2",
         "symfony/console": "^4.2",
         "symfony/expression-language": "^4.2",
@@ -28,8 +29,8 @@
         "symfony/validator": "^4.2",
         "symfony/web-link": "^4.2",
         "symfony/webpack-encore-bundle": "^1.0",
-        "symfony/yaml": "^4.2",
         "symfony/workflow": "^4.2",
+        "symfony/yaml": "^4.2",
         "twig/extensions": "^1.5",
         "whiteoctober/breadcrumbs-bundle": "^1.4"
     },

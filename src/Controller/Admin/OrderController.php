@@ -84,6 +84,7 @@ class OrderController extends AbstractController
      * @param Request     $request
      * @Route("/order/create", name="admin_order_create")
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     * @throws \Exception
      */
     public function create(Request $request): Response
     {
@@ -168,7 +169,7 @@ class OrderController extends AbstractController
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      * @Route("/order/{id}/apply-transition/{transition}", name="admin_order_apply_transition")
      */
-    public function applyTransition($transition, OrderVersion $orderVersion): Response
+    public function applyTransition(OrderVersion $orderVersion, $transition): Response
     {
         try {
             $this->getOrderVersionManager()->apply($transition, $orderVersion, $this->getUser());
